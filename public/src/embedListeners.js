@@ -3,13 +3,20 @@
 // Refer listeners.js
 import simulationArea from './simulationArea';
 import {
-    scheduleUpdate, update, updateSelectionsAndPane,
-    wireToBeCheckedSet, updatePositionSet, updateSimulationSet,
-    updateCanvasSet, gridUpdateSet, errorDetectedSet,
+    scheduleUpdate,
+    update,
+    updateSelectionsAndPane,
+    wireToBeCheckedSet,
+    updatePositionSet,
+    updateSimulationSet,
+    updateCanvasSet,
+    gridUpdateSet,
+    errorDetectedSet,
 } from './engine';
 import { changeScale } from './canvasApi';
 import { copy, paste } from './events';
-import { ZoomIn, ZoomOut} from './listeners';
+import { ZoomIn, ZoomOut } from './listeners';
+import 'hammerjs';
 
 var unit = 10;
 
@@ -23,7 +30,68 @@ export default function startListeners() {
             simulationArea.controlDown = false;
         }
     });
+    var touch_embeded_simulation = document.querySelector('#simulationArea');
+    var touch_simulation_event = new Hammer(touch_embeded_simulation);
+    touch_simulation_event.on('panstart', function(ev) {
+        if (ev.type == 'panstart') {
+            errorDetectedSet(false);
+            updateSimulationSet(true);
+            updatePositionSet(true);
+            updateCanvasSet(true);
 
+            simulationArea.lastSelected = undefined;
+            simulationArea.selected = false;
+            simulationArea.hover = undefined;
+            var rect = simulationArea.canvas.getBoundingClientRect();
+            simulationArea.mouseDownRawX = (ev.deltaX - rect.left) * DPR;
+            simulationArea.mouseDownRawY = (ev.deltaY - rect.top) * DPR;
+            simulationArea.mouseDownX = Math.round(((simulationArea.mouseDownRawX - globalScope.ox) / globalScope.scale) / unit) * unit;
+            simulationArea.mouseDownY = Math.round(((simulationArea.mouseDownRawY - globalScope.oy) / globalScope.scale) / unit) * unit;
+            simulationArea.mouseDown = true;
+            simulationArea.oldx = globalScope.ox;
+            simulationArea.oldy = globalScope.oy;
+
+
+            e.preventDefault();
+            scheduleUpdate(1);
+        }
+        if (ev.type == 'panmove') {
+            console.log('embaded moving');
+            var ele = document.getElementById('elementName');
+            if (globalScope && simulationArea && simulationArea.objectList) {
+                var { objectList } = simulationArea;
+                objectList = objectList.filter((val) => val !== 'wires');
+
+                for (var i = 0; i < objectList.length; i++) {
+                    for (var j = 0; j < globalScope[objectList[i]].length; j++) {
+                        if (globalScope[objectList[i]][j].isHover()) {
+                            ele.style.display = 'block';
+                            if (objectList[i] === 'SubCircuit') {
+                                ele.innerHTML = `Subcircuit: ${globalScope.SubCircuit[j].data.name}`;
+                            } else {
+                                ele.innerHTML = `CircuitElement: ${objectList[i]}`;
+                            }
+                            return;
+                        }
+                    }
+                }
+            }
+
+            ele.style.display = 'none';
+            document.getElementById('elementName').innerHTML = '';
+        }
+        if (ev.type == 'panend') {
+            simulationArea.mouseDown = false;
+            errorDetectedSet(false);
+            updateSimulationSet(true);
+            updatePositionSet(true);
+            updateCanvasSet(true);
+            gridUpdateSet(true);
+            wireToBeCheckedSet(1);
+
+            scheduleUpdate(1);
+        }
+    });
     document.getElementById('simulationArea').addEventListener('mousedown', (e) => {
         errorDetectedSet(false);
         updateSimulationSet(true);
@@ -85,7 +153,7 @@ export default function startListeners() {
         if (simulationArea.lastSelected == globalScope.root) {
             updateCanvasSet(true);
             var fn;
-            fn = function () {
+            fn = function() {
                 updateSelectionsAndPane();
             };
             scheduleUpdate(0, 20, fn);
@@ -164,7 +232,7 @@ export default function startListeners() {
 
         scheduleUpdate(1);
     });
-    window.addEventListener('mousedown', function (e) {
+    window.addEventListener('mousedown', function(e) {
         this.focus();
     });
 
@@ -201,5 +269,5 @@ export default function startListeners() {
     }
 }
 
-var isIe = (navigator.userAgent.toLowerCase().indexOf('msie') != -1
-    || navigator.userAgent.toLowerCase().indexOf('trident') != -1);
+var isIe = (navigator.userAgent.toLowerCase().indexOf('msie') != -1 ||
+    navigator.userAgent.toLowerCase().indexOf('trident') != -1);

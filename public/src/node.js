@@ -3,8 +3,12 @@ import { drawCircle, drawLine, arc } from './canvasApi';
 import simulationArea from './simulationArea';
 import { distance, showError } from './utils';
 import {
-    renderCanvas, scheduleUpdate, wireToBeCheckedSet,
-    updateSimulationSet, updateCanvasSet, forceResetNodesSet,
+    renderCanvas,
+    scheduleUpdate,
+    wireToBeCheckedSet,
+    updateSimulationSet,
+    updateCanvasSet,
+    forceResetNodesSet,
     canvasMessageData,
 } from './engine';
 import Wire from './wire';
@@ -12,7 +16,7 @@ import Wire from './wire';
 import { colors } from './themer/themer';
 
 /**
-* Constructs all the connections of Node node
+ * Constructs all the connections of Node node
  * @param {Node} node - node to be constructed
  * @param {JSON} data - the saved data which is used to load
  * @category node
@@ -41,8 +45,12 @@ export function replace(node, index) {
     node.updateRotation();
     return node;
 }
+
 function rotate(x1, y1, dir) {
-    if (dir == 'LEFT') { return [-x1, y1]; } if (dir == 'DOWN') { return [y1, x1]; } if (dir == 'UP') { return [y1, -x1]; } return [x1, y1];
+    if (dir == 'LEFT') { return [-x1, y1]; }
+    if (dir == 'DOWN') { return [y1, x1]; }
+    if (dir == 'UP') { return [y1, -x1]; }
+    return [x1, y1];
 }
 
 export function extractBits(num, start, end) {
@@ -161,12 +169,12 @@ export default class Node {
         this.wasClicked = false;
         this.scope = this.parent.scope;
         /**
-        * @type {string}
-        * value of this.prev is
-        * 'a' : whenever a node is not being dragged this.prev is 'a'
-        * 'x' : when node is being dragged horizontally
-        * 'y' : when node is being dragged vertically
-        */
+         * @type {string}
+         * value of this.prev is
+         * 'a' : whenever a node is not being dragged this.prev is 'a'
+         * 'x' : when node is being dragged horizontally
+         * 'y' : when node is being dragged vertically
+         */
         this.prev = 'a';
         this.count = 0;
         this.highlighted = false;
@@ -205,24 +213,24 @@ export default class Node {
     }
 
     /**
-    * Helper fuction to move a node. Sets up some variable which help in changing node.
-    */
+     * Helper fuction to move a node. Sets up some variable which help in changing node.
+     */
     startDragging() {
         this.oldx = this.x;
         this.oldy = this.y;
     }
 
     /**
-    * Helper fuction to move a node.
-    */
+     * Helper fuction to move a node.
+     */
     drag() {
         this.x = this.oldx + simulationArea.mouseX - simulationArea.mouseDownX;
         this.y = this.oldy + simulationArea.mouseY - simulationArea.mouseDownY;
     }
 
     /**
-    * Funciton for saving a node
-    */
+     * Funciton for saving a node
+     */
     saveObject() {
         if (this.type == 2) {
             this.leftx = this.x;
@@ -246,7 +254,8 @@ export default class Node {
      * helper function to help rotating parent
      */
     updateRotation() {
-        var x; var
+        var x;
+        var
             y;
         [x, y] = rotate(this.leftx, this.lefty, this.parent.direction);
         this.x = x;
@@ -254,8 +263,8 @@ export default class Node {
     }
 
     /**
-    * Refreshes a node after roation of parent
-    */
+     * Refreshes a node after roation of parent
+     */
     refresh() {
         this.updateRotation();
         for (var i = 0; i < this.connections.length; i++) {
@@ -265,15 +274,15 @@ export default class Node {
     }
 
     /**
-    * gives absolute x position of the node
-    */
+     * gives absolute x position of the node
+     */
     absX() {
         return this.x + this.parent.x;
     }
 
     /**
-    * gives absolute y position of the node
-    */
+     * gives absolute y position of the node
+     */
     absY() {
         return this.y + this.parent.y;
     }
@@ -302,8 +311,8 @@ export default class Node {
     }
 
     /**
-    * function to connect two nodes.
-    */
+     * function to connect two nodes.
+     */
     connect(n) {
         if (n == this) return;
         if (n.connections.contains(this)) return;
@@ -331,8 +340,8 @@ export default class Node {
     }
 
     /**
-    * disconnecting two nodes connected wirelessly
-    */
+     * disconnecting two nodes connected wirelessly
+     */
     disconnectWireLess(n) {
         this.connections.clean(n);
         n.connections.clean(this);
@@ -355,7 +364,7 @@ export default class Node {
                 if (this.parent.objectType == 'Splitter') {
                     this.parent.removePropagation();
                 } else
-                    if (this.parent.isResolvable()) { simulationArea.simulationQueue.add(this.parent); } else { this.parent.removePropagation(); }
+                if (this.parent.isResolvable()) { simulationArea.simulationQueue.add(this.parent); } else { this.parent.removePropagation(); }
             }
 
             if (this.type == NODE_OUTPUT && !this.subcircuitOverride) {
@@ -379,10 +388,11 @@ export default class Node {
             const node = this.connections[i];
 
             if (node.value != this.value || node.bitWidth != this.bitWidth) {
-                if (node.type == 1 && node.value != undefined 
-                    && node.parent.objectType != 'TriState' 
-                    && !(node.subcircuitOverride && node.scope != this.scope) // Subcircuit Input Node Output Override
-                    && node.parent.objectType != 'SubCircuit') { // Subcircuit Output Node Override
+                if (node.type == 1 && node.value != undefined &&
+                    node.parent.objectType != 'TriState' &&
+                    !(node.subcircuitOverride && node.scope != this.scope) // Subcircuit Input Node Output Override
+                    &&
+                    node.parent.objectType != 'SubCircuit') { // Subcircuit Output Node Override
                     this.highlighted = true;
                     node.highlighted = true;
                     var circuitName = node.scope.name;
@@ -438,17 +448,7 @@ export default class Node {
         //        
         const color = colors["color_wire_draw"];
         if (this.clicked) {
-            if (this.prev == 'x') {
-                drawLine(ctx, this.absX(), this.absY(), simulationArea.mouseX, this.absY(), color, 3);
-                drawLine(ctx, simulationArea.mouseX, this.absY(), simulationArea.mouseX, simulationArea.mouseY, color, 3);
-            } else if (this.prev == 'y') {
-                drawLine(ctx, this.absX(), this.absY(), this.absX(), simulationArea.mouseY, color, 3);
-                drawLine(ctx, this.absX(), simulationArea.mouseY, simulationArea.mouseX, simulationArea.mouseY, color, 3);
-            } else if (Math.abs(this.x + this.parent.x - simulationArea.mouseX) > Math.abs(this.y + this.parent.y - simulationArea.mouseY)) {
-                drawLine(ctx, this.absX(), this.absY(), simulationArea.mouseX, this.absY(), color, 3);
-            } else {
-                drawLine(ctx, this.absX(), this.absY(), this.absX(), simulationArea.mouseY, color, 3);
-            }
+
         }
         var colorNode = colors['stroke'];
         const colorNodeConnect = colors['color_wire_con']
@@ -459,8 +459,8 @@ export default class Node {
         if (this.bitWidth == 1) colorNode = [colorNodeConnect, colorNodePow][this.value];
         if (this.value == undefined) colorNode = colorNodeLose;
         if (this.type == 2) this.checkHover();
-        if (this.type == 2) { drawCircle(ctx, this.absX(), this.absY(), 3, colorNode);  } else { drawCircle(ctx, this.absX(), this.absY(), 3, colorNodeSelected); }
-        
+        if (this.type == 2) { drawCircle(ctx, this.absX(), this.absY(), 3, colorNode); } else { drawCircle(ctx, this.absX(), this.absY(), 3, colorNodeSelected); }
+
         if (this.highlighted || simulationArea.lastSelected == this || (this.isHover() && !simulationArea.selected && !simulationArea.shiftDown) || simulationArea.multipleObjectSelections.contains(this)) {
             ctx.strokeStyle = colorNodeSelected;
             ctx.beginPath();
@@ -504,9 +504,9 @@ export default class Node {
     }
 
     /**
-    * used to update nodes if there is a event like click or hover on the node.
-    * many booleans are used to check if certain properties are to be updated.
-    */
+     * used to update nodes if there is a event like click or hover on the node.
+     * many booleans are used to check if certain properties are to be updated.
+     */
     update() {
         if (embed) return;
 
@@ -565,7 +565,8 @@ export default class Node {
                     this.y = simulationArea.mouseY - this.parent.y;
                     this.prev = 'a';
                     return;
-                } if (this.connections.length == 1 && this.connections[0].absY() == simulationArea.mouseY && this.absY() == simulationArea.mouseY) {
+                }
+                if (this.connections.length == 1 && this.connections[0].absY() == simulationArea.mouseY && this.absY() == simulationArea.mouseY) {
                     this.x = simulationArea.mouseX - this.parent.x;
                     this.prev = 'a';
                     return;
@@ -597,9 +598,14 @@ export default class Node {
                 return; // no new node situation
             }
 
-            var x1; var y1; var x2; var y2; var
+            var x1;
+            var y1;
+            var x2;
+            var y2;
+            var
                 flag = 0;
-            var n1; var
+            var n1;
+            var
                 n2;
 
             // (x,y) present node, (x1,y1) node 1 , (x2,y2) node 2

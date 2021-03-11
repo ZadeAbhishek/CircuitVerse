@@ -7,7 +7,10 @@ import { layoutModeGet, layoutUpdate } from './layoutMode';
 import plotArea from './plotArea';
 import simulationArea from './simulationArea';
 import {
-    dots, canvasMessage, findDimensions, rect2,
+    dots,
+    canvasMessage,
+    findDimensions,
+    rect2,
 } from './canvasApi';
 import { showProperties, prevPropertyObjGet } from './ux';
 import { showError } from './utils';
@@ -186,7 +189,7 @@ export function errorDetectedGet() {
  * @property {number} y - x cordinate of message
  * @property {number} string - the message
  * @category engine
-*/
+ */
 export var canvasMessageData = {
     x: undefined,
     y: undefined,
@@ -345,7 +348,8 @@ export function updateSelectionsAndPane(scope = globalScope) {
                 for (var j = 0; j < scope[updateOrder[i]].length; j++) {
                     var obj = scope[updateOrder[i]][j];
                     if (simulationArea.multipleObjectSelections.contains(obj)) continue;
-                    var x; var
+                    var x;
+                    var
                         y;
                     if (obj.objectType === 'Node') {
                         x = obj.absX();

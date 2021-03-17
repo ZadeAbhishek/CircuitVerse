@@ -39,6 +39,12 @@ var lastPosX = 0;
 var lastPosY = 0;
 var isDragging = false;
 let start = 0;
+var pinchstart = false;
+var ctxPos = {
+    x: 0,
+    y: 0,
+    visible: false,
+};
 
 
 
@@ -50,13 +56,32 @@ window.onload = function() {
         var touchsimlatorevent = new Hammer(touchsimulatorlistner);
         touchsimlatorevent.get('pinch').set({ enable: true });
         touchsimlatorevent.get('pan').set({ direction: Hammer.DIRECTION_ALL });
-        touchsimlatorevent.on("tap panstart panmove panend pinchstart pinchin pinchout pinchmove pinchend", function(e) {
+        touchsimlatorevent.on("tap press panstart panmove panend pinchstart pinchin pinchout pinchmove pinchend", function(e) {
 
             var X = e.center.x;
             var Y = e.center.y;
+            if (e.type == "press") {
+                console.log("DT");
+                if (layoutModeGet()) return false; // Hide context menu when it is in Layout Mode
+                $('#contextMenu').css({
+                    visibility: 'visible',
+                    opacity: 1,
+                    top: `${e.center.y}px`,
+                    left: `${e.center.x}px`,
+                });
+                ctxPos.visible = true;
+            }
             if (e.type == "tap") {
                 simulationArea.touchX = e.center.x;
                 simulationArea.touchY = e.center.y;
+                ctxPos.visible = false;
+                $('#contextMenu').css({
+                    visibility: 'invisible',
+                    opacity: 0,
+
+                });
+                ctxPos.visible = false;
+
             }
             if (e.type == "panstart") {
                 console.log('pan on simulator');
@@ -85,6 +110,7 @@ window.onload = function() {
                 simulationArea.mouseDownY = Math.round(((simulationArea.mouseDownRawY - globalScope.oy) / globalScope.scale) / unit) * unit;
                 simulationArea.oldx = globalScope.ox;
                 simulationArea.oldy = globalScope.oy;
+
 
                 e.preventDefault();
                 scheduleBackup();
@@ -168,23 +194,31 @@ window.onload = function() {
             if (e.type == "pinchstart") {
                 var pinchX = e.center.x;
                 var pinchY = e.center.y;
+                pinchstart = true;
             }
 
 
             if (e.type == "pinchin") {
-                console.log(JSON.stringify(e));
-                changeScale(-0.1 * DPR, pinchX, pinchY);
-                gridUpdateSet(true);
+
+                setTimeout(() => {
+                    console.log(JSON.stringify(e));
+                    if (pinchstart === true) {
+                        changeScale(-0.1 * 2, pinchX, pinchY);
+                    }
+                    gridUpdateSet(true);
+
+                }, 50);
 
 
             }
             if (e.type == "pinchout") {
-                changeScale(0.1 * DPR, pinchX, pinchY);
+                changeScale(0.1 * 2, pinchX, pinchY);
                 gridUpdateSet(true);
             }
             if (e.type == "pinchend") {
                 console.log('end');
                 gridUpdateSet(true);
+                pinchstart = false;
 
 
             }

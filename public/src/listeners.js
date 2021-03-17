@@ -39,6 +39,13 @@ var lastPosX = 0;
 var lastPosY = 0;
 var isDragging = false;
 let start = 0;
+var viewportWidth = null;
+var scale = null;
+var lastScale = null;
+var viewportHeight = null;
+var curWidth = null;
+var curHeight = null;
+
 
 
 
@@ -166,25 +173,78 @@ window.onload = function() {
                 }
             }
             if (e.type == "pinchstart") {
-                var pinchX = e.center.x;
-                var pinchY = e.center.y;
+
+                var el = document.querySelector('#simulationArea');
+                viewportWidth = el.offsetWidth;
+                scale = globalScope.scale;
+                lastScale = scale;
+                viewportHeight = el.parentElement.offsetHeight;
+                curWidth = (simulationArea.width) * scale;
+                curHeight = (simulationArea.height) * scale;
+                var absolutePosition = function(el) {
+                    var x = 0,
+                        y = 0;
+
+                    while (el !== null) {
+                        x += el.offsetLeft;
+                        y += el.offsetTop;
+                        el = el.offsetParent;
+                    }
+
+                    return { x: x, y: y };
+                };
+                var rawCenter = function(e) {
+                    var pos = absolutePosition(el);
+
+                    // We need to account for the scroll position
+                    var scrollLeft = window.pageXOffset ? window.pageXOffset : document.body.scrollLeft;
+                    var scrollTop = window.pageYOffset ? window.pageYOffset : document.body.scrollTop;
+
+                    var zoomX = -x + (e.center.x - pos.x + scrollLeft) / scale;
+                    var zoomY = -y + (e.center.y - pos.y + scrollTop) / scale;
+
+                    return { x: zoomX, y: zoomY };
+                };
+
+                // We only calculate the pinch center on the first pinch event as we want the center to
+                // stay consistent during the entire pinch
+                if (pinchCenter === null) {
+                    pinchCenter = rawCenter(e);
+                    var offsetX = pinchCenter.x * scale - (-x * scale + Math.min(viewportWidth, curWidth) / 2);
+                    var offsetY = pinchCenter.y * scale - (-y * scale + Math.min(viewportHeight, curHeight) / 2);
+                    pinchCenterOffset = { x: offsetX, y: offsetY };
+                }
+
+                // When the user pinch zooms, she/he expects the pinch center to remain in the same
+                // relative location of the screen. To achieve this, the raw zoom center is calculated by
+                // first storing the pinch center and the scaled offset to the current center of the
+                // image. The new scale is then used to calculate the zoom center. This has the effect of
+                // actually translating the zoom center on each pinch zoom event.
+                var newScale = restrictScale(scale * e.scale);
+                var zoomX = pinchCenter.x * newScale - pinchCenterOffset.x;
+                var zoomY = pinchCenter.y * newScale - pinchCenterOffset.y;
+                var zoomCenter = { x: zoomX / newScale, y: zoomY / newScale };
+
+
+
             }
 
 
             if (e.type == "pinchin") {
-                console.log(JSON.stringify(e));
-                changeScale(-0.1 * DPR, pinchX, pinchY);
+                // console.log(JSON.stringify(e));
+                changeScale(-1, zoomCenter.x, zoomCenter.y);
                 gridUpdateSet(true);
 
 
             }
             if (e.type == "pinchout") {
-                changeScale(0.1 * DPR, pinchX, pinchY);
+                changeScale(1, zoomCenter.x, zoomCenter.y);
                 gridUpdateSet(true);
             }
             if (e.type == "pinchend") {
                 console.log('end');
                 gridUpdateSet(true);
+                pinchCenter = null;
 
 
             }

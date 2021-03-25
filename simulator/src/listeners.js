@@ -72,6 +72,17 @@ window.onload = function() {
                 ctxPos.visible = true;
             }
             if (e.type == "tap") {
+
+                function getWidth() {
+                    return Math.max(
+                        document.body.scrollWidth,
+                        document.documentElement.scrollWidth,
+                        document.body.offsetWidth,
+                        document.documentElement.offsetWidth,
+                        document.documentElement.clientWidth
+                    );
+                }
+                console.log(window.screen.width);
                 simulationArea.touchX = e.center.x;
                 simulationArea.touchY = e.center.y;
                 ctxPos.visible = false;
@@ -81,6 +92,7 @@ window.onload = function() {
 
                 });
                 ctxPos.visible = false;
+                $('#moduleProperty').hide();
 
             }
             if (e.type == "panstart") {

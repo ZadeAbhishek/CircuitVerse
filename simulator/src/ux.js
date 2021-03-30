@@ -247,7 +247,7 @@ export function showProperties(obj) {
             }
 
         }
-        if (window.screen.width > 768 && window.screen.height > 768) {
+        if (true) {
             $('#moduleProperty').show();
             $('#layoutDialog').hide();
             $('#moduleProperty-inner').append("<div id='moduleProperty-header'>" + obj.objectType + "</div>");
@@ -277,7 +277,7 @@ export function showProperties(obj) {
 
 
     } else if (simulationArea.lastSelected === undefined || ['Wire', 'CircuitElement', 'Node'].indexOf(simulationArea.lastSelected.objectType) !== -1) {
-        if (window.screen.width > 768 && window.screen.height > 768) {
+        if (true) {
             $('#moduleProperty').show();
             $('#moduleProperty-inner').append("<div id='moduleProperty-header'>" + 'Project Properties' + '</div>');
             $('#moduleProperty-inner').append(`<p><span>Project:</span> <input id='projname' class='objectPropertyAttribute' type='text' autocomplete='off' name='setProjectName'  value='${getProjectName() || 'Untitled'}'></p>`);
@@ -290,7 +290,7 @@ export function showProperties(obj) {
         }
 
     } else {
-        if (window.screen.width > 768 && window.screen.height > 768) {
+        if (true) {
             $('#moduleProperty').show();
 
             $('#moduleProperty-inner').append(`<div id='moduleProperty-header'>${obj.objectType}</div>`);

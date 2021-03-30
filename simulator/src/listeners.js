@@ -981,3 +981,21 @@ function touchhandleZoom(direction) {
     gridUpdateSet(true);
     scheduleUpdate();
 }
+
+function sliderZoomButton(direction) {
+    var zoomSlider = $('#customRange1');
+    var currentSliderValue = parseInt(zoomSlider.val(), 10);
+    if (direction === -1) {
+        currentSliderValue--;
+    } else {
+        currentSliderValue++;
+    }
+    zoomSlider.val(currentSliderValue).change();
+}
+$('#decrement').click(() => {
+    sliderZoomButton(-1);
+});
+
+$('#increment').click(() => {
+    sliderZoomButton(1);
+});

@@ -1,10 +1,10 @@
 // Size of canvas
 var width;
 var height;
-var listenToSimulator=true; //enables key down listener on the simulator
+var listenToSimulator = true; //enables key down listener on the simulator
 
-var createNode=false //Flag to create node when its value ==true
-var stopWire=true //flag for stopoing making Nodes when the second terminal reaches a Node (closed path)
+var createNode = false //Flag to create node when its value ==true
+var stopWire = true //flag for stopoing making Nodes when the second terminal reaches a Node (closed path)
 
 uniqueIdCounter = 0; // To be deprecated
 unit = 10; // size of each division/ not used everywhere, to be deprecated
@@ -493,8 +493,8 @@ function resetup() {
     backgroundArea.canvas.width = width + 100 * DPR;
     backgroundArea.canvas.height = height + 100 * DPR;
     if (!embed) {
-        plotArea.c.width = document.getElementById("plot").clientWidth;
-        plotArea.c.height = document.getElementById("plot").clientHeight
+        plotArea.c.width = document.getElementsByClassName("plot").clientWidth;
+        plotArea.c.height = document.getElementsByClassName("plot").clientHeight
     }
 
     updateCanvas = true;
@@ -1424,7 +1424,7 @@ CircuitElement.prototype.processVerilog = function() {
     var output_total = 0;
     for (var i = 0; i < this.nodeList.length; i++) {
         if (this.nodeList[i].type == NODE_OUTPUT && this.nodeList[i].connections.length > 0)
-          output_total++;
+            output_total++;
     }
 
     var output_count = 0;
@@ -1522,10 +1522,9 @@ function gateGenerateVerilog(gate, invert = false) {
     res += " = ";
 
     var inputParams = inputs.map(x => x.verilogLabel).join(` ${gate} `);
-    if(invert) {
+    if (invert) {
         res += `~(${inputParams});`;
-    }
-    else {
+    } else {
         res += inputParams + ';';
     }
     return res;

@@ -1,4 +1,5 @@
 // Most Listeners are stored here
+/* eslint-disable */
 import { layoutModeGet, tempBuffer, layoutUpdate, setupLayoutModePanelListeners } from './layoutMode';
 import simulationArea from './simulationArea';
 import {
@@ -45,8 +46,9 @@ var ctxPos = {
     y: 0,
     visible: false,
 };
-
-
+var pinY = 0;
+var pinX = 0;
+var hammerscale = 0;
 
 window.onload = function() {
     var is_touch_device = 'ontouchstart' in simulationArea.canvas;
@@ -72,6 +74,7 @@ window.onload = function() {
                 ctxPos.visible = true;
             }
             if (e.type == "tap") {
+                simulationArea.shiftDown = false;
 
                 function getWidth() {
                     return Math.max(
@@ -203,40 +206,141 @@ window.onload = function() {
                     uxvar.smartDropYY = simulationArea.mouseY - 50; // Math.round(((simulationArea.mouseRawY - globalScope.oy+100) / globalScope.scale) / unit) * unit;
                 }
             }
-            if (e.type == "pinchstart") {
-                var pinchX = e.center.x;
-                var pinchY = e.center.y;
-                pinchstart = true;
-            }
+
+            /* if (e.type == "pinchstart") {
+                 var pinchX = e.center.x;
+                 var pinchY = e.center.y;
+                 pinchstart = true;
+             }
 
 
-            if (e.type == "pinchin") {
+             if (e.type == "pinchin") {
 
-                setTimeout(() => {
-                    console.log(JSON.stringify(e));
-                    if (pinchstart === true) {
-                        changeScale(-0.1 * 2, pinchX, pinchY);
-                    }
-                    gridUpdateSet(true);
+                 setTimeout(() => {
+                     console.log(JSON.stringify(e));
+                     if (pinchstart === true) {
+                         changeScale(-0.1 * 2, pinchX, pinchY);
+                     }
+                     gridUpdateSet(true);
 
-                }, 50);
-
-
-            }
-            if (e.type == "pinchout") {
-                changeScale(0.1 * 2, pinchX, pinchY);
-                gridUpdateSet(true);
-            }
-            if (e.type == "pinchend") {
-                console.log('end');
-                gridUpdateSet(true);
-                pinchstart = false;
+                 }, 50);
 
 
-            }
+             }
+             if (e.type == "pinchout") {
+                 changeScale(0.1 * 2, pinchX, pinchY);
+                 gridUpdateSet(true);
+             }
+             if (e.type == "pinchend") {
+                 console.log('end');
+                 gridUpdateSet(true);
+                 pinchstart = false;
+
+
+             }*/
 
 
         });
+        touchsimlatorevent.on('pinch pinchmove', ev => {
+            /* displayImageCurrentScale = clampScale(ev.scale * displayImageScale);
+             updateRange();
+             displayImageCurrentX = clamp(displayImageX + ev.deltaX, rangeMinX, rangeMaxX);
+             displayImageCurrentY = clamp(displayImageY + ev.deltaY, rangeMinY, rangeMaxY);
+             updateDisplayImage(displayImageCurrentX, displayImageCurrentY, displayImageCurrentScale);*/
+            //console.log("PICH works herer");
+            //changeScale(ev.scale);
+
+
+
+
+
+            //updateCanvasSet(true);
+            console.log(` EV.scale:${ev.scale}`);
+            console.log(`GlobalSope:${globalScope.scale}`);
+            console.log(` Hammer scale:${hammerscale}`);
+            var oldScale = globalScope.scale;
+            hammerscale = ev.scale;
+            // if (hammerscale >= 1.9) { hammerscale = 1.9 }
+            globalScope.scale = Math.max(0.5, Math.min(4 * DPR, hammerscale * 5));
+            globalScope.scale = Math.round(globalScope.scale * 10) / 10;
+            if (globalScope.scale >= 7.5) { globalScope.scale = 7.5 }
+            //if (globalScope.scale < 2) { globalScope.scale = 2 };
+            if (simulationArea.lastSelected && simulationArea.lastSelected.objectType !== 'Wire') { // selected object
+                pinX = simulationArea.lastSelected.x + ev.deltaX;
+                pinY = simulationArea.lastSelected.y + ev.deltaY;
+            } else {
+                pinY = ev.center.y;
+                pinX = ev.center.x;
+            }
+
+            globalScope.ox -= Math.round(pinX * ((globalScope.scale) - oldScale)); // Shift accordingly, so that we zoom wrt to the selected point
+            globalScope.oy -= Math.round(pinY * ((globalScope.scale) - oldScale));
+            // if (globalScope.scale < 7.5 && globalScope > 3.5) {
+            var scale = unit * globalScope.scale;
+            var ox = globalScope.ox % scale; // offset
+            var oy = globalScope.oy % scale; // offset
+            var transparentBackground = false;
+            var force = false;
+            document.getElementById('backgroundArea').style.left = (ox - scale) / DPR;
+            document.getElementById('backgroundArea').style.top = (oy - scale) / DPR;
+            if (globalScope.scale === simulationArea.prevScale && !force) return;
+
+            if (!backgroundArea.context) return;
+            simulationArea.prevScale = globalScope.scale;
+
+            var canvasWidth = backgroundArea.canvas.width; // max X distance
+            var canvasHeight = backgroundArea.canvas.height; // max Y distance
+
+            var ctx = backgroundArea.context;
+            ctx.beginPath();
+            backgroundArea.clear();
+            ctx.strokeStyle = colors["canvas_stroke"];
+            ctx.lineWidth = 1;
+            if (!transparentBackground) {
+                ctx.fillStyle = colors["canvas_fill"];
+                ctx.rect(0, 0, canvasWidth, canvasHeight);
+                ctx.fill();
+            }
+
+            if (!embed) {
+                var correction = 0.5 * (ctx.lineWidth % 2);
+                for (var i = 0; i < canvasWidth; i += scale) {
+                    ctx.moveTo(Math.round(i + correction) - correction, 0);
+                    ctx.lineTo(Math.round(i + correction) - correction, canvasHeight);
+                }
+                for (var j = 0; j < canvasHeight; j += scale) {
+                    ctx.moveTo(0, Math.round(j + correction) - correction);
+                    ctx.lineTo(canvasWidth, Math.round(j + correction) - correction);
+                }
+                ctx.stroke();
+            }
+
+
+            //  gridUpdateSet(true);
+            //  updateCanvasSet(true);
+            updateCanvasSet(true);
+            updateSimulationSet(true);
+            updatePositionSet(true);
+            gridUpdateSet(true);
+            wireToBeCheckedSet(1);
+            scheduleUpdate(1);
+
+
+
+
+
+
+        });
+        touchsimlatorevent.on('pinchend', ev => {
+            updateCanvasSet(true);
+            updateSimulationSet(true);
+            updatePositionSet(true);
+            gridUpdateSet(true);
+            wireToBeCheckedSet(1);
+            scheduleUpdate(1);
+
+        });
+
 
         var quick_btn = document.querySelector('#quick-btn');
         var quick_btn_listner = document.getElementById('quick-btn');

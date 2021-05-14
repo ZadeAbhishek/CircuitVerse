@@ -50,16 +50,22 @@ var pinY = 0;
 var pinX = 0;
 var hammerscale = 0;
 
+
 window.onload = function() {
+
     var is_touch_device = 'ontouchstart' in simulationArea.canvas;
     if (is_touch_device) {
         $('#simulationArea').disableSelection();
         var touchsimulatorlistner = document.querySelector('#simulationArea');
+        // const options = { passive: false }; // needed because Chrome has this set to "true" by default for "touchmove" events
         var touchsimlatorevent = new Hammer(touchsimulatorlistner);
         touchsimlatorevent.get('pinch').set({ enable: true });
         touchsimlatorevent.get('pan').set({ direction: Hammer.DIRECTION_ALL });
-        touchsimlatorevent.on("tap press panstart panmove panend pinchstart pinchin pinchout pinchmove pinchend", function(e) {
+        touchsimlatorevent.get('rotate').set({ enable: true });
+        //touchsimlatorevent.get('pan').set({ threshold: 0 });
 
+        touchsimlatorevent.on("tap press panstart panmove panend pinchstart pinchin pinchout pinchmove pinchend", function(e) {
+            e.preventDefault();
             var X = e.center.x;
             var Y = e.center.y;
             if (e.type == "press") {
@@ -95,7 +101,7 @@ window.onload = function() {
 
                 });
                 ctxPos.visible = false;
-                $('#moduleProperty').hide();
+                //$('#moduleProperty').hide();
 
             }
             if (e.type == "panstart") {
@@ -255,6 +261,7 @@ window.onload = function() {
 
 
             //updateCanvasSet(true);
+
             console.log(` EV.scale:${ev.scale}`);
             console.log(`GlobalSope:${globalScope.scale}`);
             console.log(` Hammer scale:${hammerscale}`);
@@ -340,6 +347,67 @@ window.onload = function() {
             scheduleUpdate(1);
 
         });
+
+        var B1 = document.querySelector('#B1');
+        var Mobile_CE_Menu = document.getElementById('menu2');
+        var B1_listner_hammer = new Hammer(B1);
+
+        B1_listner_hammer.on("tap", function(ev) {
+
+
+            if (ev.type === "tap") {
+                console.log("Tap on B1");
+                if (Mobile_Module_Menu.style.visibility === "visible") {
+                    Mobile_Module_Menu.style.visibility = "hidden";
+                    document.getElementById('touchElement-property').style.visibility = "hidden";
+
+                }
+                if (Mobile_CE_Menu.style.visibility === "visible") {
+                    Mobile_CE_Menu.style.visibility = "hidden";
+                    document.getElementsByClassName("Mobile-Ce-Menu")[0].style.visibility = "hidden";
+                    document.getElementById("TouchCe-panel").style.visibility = "hidden";
+                    document.getElementById("B1").style.color = "black";
+                } else {
+                    Mobile_CE_Menu.style.visibility = "visible";
+                    document.getElementsByClassName("Mobile-Ce-Menu")[0].style.visibility = "visible"
+                    document.getElementById("TouchCe-panel").style.visibility = "visible";
+                    document.getElementById("B1").style.color = "red";
+                }
+            }
+
+        });
+
+
+        var B2 = document.querySelector('#B2');
+        var Mobile_Module_Menu = document.getElementById('Mobile-module-property');
+        var B2_listner_hammer = new Hammer(B2);
+
+        B2_listner_hammer.on("tap", function(ev) {
+
+
+            if (ev.type === "tap") {
+                if (Mobile_CE_Menu.style.visibility === "visible") {
+                    Mobile_CE_Menu.style.visibility = "hidden";
+                    document.getElementsByClassName("Mobile-Ce-Menu")[0].style.visibility = "hidden";
+                    document.getElementById("TouchCe-panel").style.visibility = "hidden";
+                    document.getElementById("B1").style.color = "black";
+
+                }
+                console.log("Tap on B2");
+                if (Mobile_Module_Menu.style.visibility === "visible") {
+                    Mobile_Module_Menu.style.visibility = "hidden";
+                    document.getElementById('touchElement-property').style.visibility = "hidden";
+
+                } else {
+                    Mobile_Module_Menu.style.visibility = "visible";
+                    document.getElementById('touchElement-property').style.visibility = "visible";
+                }
+            }
+
+        });
+
+
+
 
 
         var quick_btn = document.querySelector('#quick-btn');
@@ -930,6 +998,7 @@ var isIe = (navigator.userAgent.toLowerCase().indexOf('msie') != -1 ||
     navigator.userAgent.toLowerCase().indexOf('trident') != -1);
 
 function onMouseMove(e) {
+    console.log(DPR);
     var rect = simulationArea.canvas.getBoundingClientRect();
     simulationArea.mouseRawX = (e.clientX - rect.left) * DPR;
     simulationArea.mouseRawY = (e.clientY - rect.top) * DPR;

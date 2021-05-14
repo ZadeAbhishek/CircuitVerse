@@ -24,9 +24,12 @@ import { updateRestrictedElementsList } from './restrictedElementDiv';
 import { scheduleBackup } from './data/backupCircuit';
 import { showProperties } from './ux';
 import {
-    scheduleUpdate, updateSimulationSet,
-    updateCanvasSet, updateSubcircuitSet,
-    forceResetNodesSet, changeLightMode
+    scheduleUpdate,
+    updateSimulationSet,
+    updateCanvasSet,
+    updateSubcircuitSet,
+    forceResetNodesSet,
+    changeLightMode
 } from './engine';
 import { toggleLayoutMode, layoutModeGet } from './layoutMode';
 import { setProjectName, getProjectName } from './data/save';
@@ -35,7 +38,14 @@ import { changeInputSize } from './modules';
 import { verilogModeGet, verilogModeSet } from './Verilog2CV';
 
 export const circuitProperty = {
-    toggleLayoutMode, setProjectName, changeCircuitName, changeClockTime, deleteCurrentCircuit, changeClockEnable, changeInputSize, changeLightMode,
+    toggleLayoutMode,
+    setProjectName,
+    changeCircuitName,
+    changeClockTime,
+    deleteCurrentCircuit,
+    changeClockEnable,
+    changeInputSize,
+    changeLightMode,
 };
 export var scopeList = {};
 export function resetScopeList() {
@@ -51,7 +61,7 @@ export function resetScopeList() {
  */
 export function switchCircuit(id) {
     if (layoutModeGet()) { toggleLayoutMode(); }
-    if (verilogModeGet()) { verilogModeSet(false);}
+    if (verilogModeGet()) { verilogModeSet(false); }
 
     // globalScope.fixLayout();
     scheduleBackup();
@@ -88,8 +98,8 @@ export function switchCircuit(id) {
  * Ensures that at least one circuit is there
  * Ensures that no circuit depends on the current circuit
  * Switched to a random circuit
-  * @category circuit
-*/
+ * @category circuit
+ */
 function deleteCurrentCircuit(scopeId = globalScope.id) {
     const scope = scopeList[scopeId];
     if (Object.keys(scopeList).length <= 1) {
@@ -116,7 +126,7 @@ function deleteCurrentCircuit(scopeId = globalScope.id) {
     if (confirmation) {
         if (scope.verilogMetadata.isVerilogCircuit) {
             scope.initialize();
-            for(var id in scope.verilogMetadata.subCircuitScopeIds)
+            for (var id in scope.verilogMetadata.subCircuitScopeIds)
                 delete scopeList[id];
         }
         $(`#${scope.id}`).remove();
@@ -135,26 +145,25 @@ function deleteCurrentCircuit(scopeId = globalScope.id) {
  */
 export function newCircuit(name, id, isVerilog = false, isVerilogMain = false) {
     if (layoutModeGet()) { toggleLayoutMode(); }
-    if (verilogModeGet()) { verilogModeSet(false);}
-    name = name || prompt('Enter circuit name:','Untitled-Circuit');
+    if (verilogModeGet()) { verilogModeSet(false); }
+    name = name || prompt('Enter circuit name:', 'Untitled-Circuit');
     name = stripTags(name);
     if (!name) return;
     const scope = new Scope(name);
     if (id) scope.id = id;
     scopeList[scope.id] = scope;
-    if(isVerilog) {
+    if (isVerilog) {
         scope.verilogMetadata.isVerilogCircuit = true;
         scope.verilogMetadata.isMainCircuit = isVerilogMain;
     }
     globalScope = scope;
     $('.circuits').removeClass('current');
     if (!isVerilog || isVerilogMain) {
-        if(embed) {
+        if (embed) {
             var html = `<div style='' class='circuits toolbarButton current' draggable='true' id='${scope.id}'><span class='circuitName noSelect'>${truncateString(name, 18)}</span></div>`;
             $('#tabsBar').append(html);
             $("#tabsBar").addClass('embed-tabs');
-        }
-        else {
+        } else {
             var html = `<div style='' class='circuits toolbarButton current' draggable='true' id='${scope.id}'><span class='circuitName noSelect'>${truncateString(name, 18)}</span><span class ='tabsCloseButton' id='${scope.id}'  >x</span></div>`;
             $('#tabsBar').children().last().before(html);
         }
@@ -165,18 +174,18 @@ export function newCircuit(name, id, isVerilog = false, isVerilogMain = false) {
         $('.tabsCloseButton').off('click');
 
         // Add listeners
-        $('.circuits').on('click',function () {
+        $('.circuits').on('click', function() {
             switchCircuit(this.id);
         });
 
-        $('.circuitName').on('click',(e) => {
+        $('.circuitName').on('click', (e) => {
             simulationArea.lastSelected = globalScope.root;
             setTimeout(() => {
-                document.getElementById('circname').select();
+                document.getElementById('circname1').select();
             }, 100);
         });
-        
-        $('.tabsCloseButton').on('click',function (e) {
+
+        $('.tabsCloseButton').on('click', function(e) {
             e.stopPropagation();
             deleteCurrentCircuit(this.id);
         });
@@ -185,7 +194,7 @@ export function newCircuit(name, id, isVerilog = false, isVerilogMain = false) {
         }
         dots(false);
     }
-    
+
     return scope;
 }
 
@@ -231,7 +240,7 @@ export default class Scope {
         this.oy = 0;
         this.scale = DPR;
         this.stack = [];
-        
+
         this.initialize();
 
         // Setting default layout
@@ -245,7 +254,7 @@ export default class Scope {
     }
 
     isVisible() {
-        if(!this.verilogMetadata.isVerilogCircuit)return true;
+        if (!this.verilogMetadata.isVerilogCircuit) return true;
         return this.verilogMetadata.isMainCircuit;
     }
 
@@ -277,7 +286,7 @@ export default class Scope {
 
     /**
      * Adds all inputs to simulationQueue
-    */
+     */
     addInputs() {
         for (let i = 0; i < inputList.length; i++) {
             for (var j = 0; j < this[inputList[i]].length; j++) {
@@ -323,7 +332,7 @@ export default class Scope {
 
     /**
      * helper function to reduce layout size
-    */
+     */
     fixLayout() {
         var maxY = 20;
         for (let i = 0; i < this.Input.length; i++) { maxY = Math.max(this.Input[i].layoutProperties.y, maxY); }

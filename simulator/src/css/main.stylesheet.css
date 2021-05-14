@@ -439,7 +439,9 @@ input[type="text"]:focus {
 }
 
 @media only screen and (max-width: 1080px) {
-    .ce-panel {}
+    .ce-panel {
+        visibility: hidden;
+    }
 }
 
 .accordion:last-child {
@@ -1655,4 +1657,366 @@ canvas {
     margin-left: 5px;
     /* margin-bottom: 5px; */
     border-radius: 3px;
+}
+
+#menu2 {}
+
+#TouchCe-panel {
+    border-radius: 5px;
+    z-index: 100;
+    transition: background .5s ease-out;
+    position: fixed;
+    font: inherit;
+    width: 240px;
+    top: 100px;
+    right: 80px;
+    height: 310px;
+    margin: auto;
+    padding-top: 10px;
+    visibility: hidden;
+}
+
+#Mobile-menu {
+    font: inherit;
+    height: 240px;
+    transition: background .5s ease-out;
+}
+
+#TouchCe-panel::before {
+    position: absolute;
+    top: 5px;
+    content: "";
+    right: calc(50% - 150px);
+    border-style: solid;
+    border-width: 0px 15px 15px 15px;
+    border-color: transparent transparent white transparent;
+    transform: rotate(90deg);
+    transition: background .5s ease-out;
+    padding-top: 30px;
+}
+
+.Mobile-Ce-Menu {
+    border-radius: 5px;
+    z-index: 100;
+    transition: background .5s ease-out;
+    position: absolute;
+    visibility: hidden;
+    font: inherit;
+    width: 240px;
+    top: 10px;
+    right: 9px;
+    background-color: #bfbfbf;
+    overflow: auto;
+    overflow-x: hidden;
+    height: 310px;
+    margin: auto;
+    padding-top: 10px;
+}
+
+#shortM {
+    position: absolute;
+    margin: 20px;
+    width: auto;
+    right: 0px;
+    z-index: 100;
+}
+
+#Tmenu {
+    display: inline;
+}
+
+.bbton {
+    background-color: white;
+    /* Green */
+    border: none;
+    color: black;
+    padding: 15px 15px;
+    padding-bottom: 10px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    margin-bottom: 50px;
+    top: 0px;
+}
+
+.mobilepanelHeader {
+    border: none;
+    border-radius: 0;
+    transition: background .5s ease-out;
+    ;
+}
+
+.mobilepanelHeader:hover {
+    border-radius: 3px;
+    opacity: 0.9;
+}
+
+.mobilepanelHeader:after,
+.mobilepanelHeader:before {
+    content: "";
+    height: 8px;
+    display: inline-block;
+    right: 15px;
+    position: absolute;
+    border-radius: 5px;
+    top: 50%;
+    transform: translateY(-50%) rotate(132deg);
+    transition: 0.2s ease-out;
+    background-color: white;
+}
+
+.mobilepanelHeader:after {
+    transform: translate(260%, -50%) rotate(226deg);
+}
+
+#touchElement-property {
+    font: inherit;
+    width: 240px;
+    top: 105px;
+    right: 88px;
+    position: absolute;
+    height: 310px;
+    margin: auto;
+    transition: background .5s ease-out;
+    z-index: 100;
+    visibility: hidden;
+}
+
+#touchElement-property:before {
+    position: absolute;
+    top: 105px;
+    content: "";
+    right: calc(50% - 143px);
+    border-style: solid;
+    border-width: 0px 15px 15px 15px;
+    border-color: transparent transparent #bfbfbf transparent;
+    transform: rotate(90deg);
+    transition: background .5s ease-out;
+}
+
+#Mobile-module-property {
+    font: inherit;
+    width: 240px;
+    top: 110px;
+    right: 88px;
+    background-color: goldenrod;
+    position: absolute;
+    overflow: scroll;
+    height: 310px;
+    visibility: none;
+    margin: auto;
+    transition: background .5s ease-out;
+    z-index: 100;
+    visibility: hidden;
+    padding: 5px;
+}
+
+#moduleProperty-inner-2 {
+    width: 85%;
+    margin: auto;
+    transition: background .5s ease-out;
+    z-index: 100;
+}
+
+#moduleProperty-inner-2>p span {
+    display: inline-block;
+    font-weight: bold;
+}
+
+#moduleProperty-inner-2>p button {
+    border-radius: 2px;
+    margin: 3px;
+}
+
+#moduleProperty-inner-2:last-child {
+    margin-bottom: 15px;
+}
+
+@media screen and (orientation:portrait) {
+    #TouchCe-panel {
+        border-radius: 5px;
+        z-index: 99;
+        transition: background .5s ease-out;
+        position: fixed;
+        font: inherit;
+        width: 50%;
+        top: 100px;
+        right: 120px;
+        height: 310px;
+        margin: auto;
+        padding-top: 10px;
+        visibility: hidden;
+    }
+    #Mobile-menu {
+        font: inherit;
+        height: 240px;
+        transition: background .5s ease-out;
+    }
+    #TouchCe-panel::before {
+        position: absolute;
+        top: 9px;
+        content: "";
+        right: calc(50% - 280px);
+        border-style: solid;
+        border-width: 0px 25px 25px 25px;
+        border-color: transparent transparent white transparent;
+        transform: rotate(90deg);
+        transition: background .5s ease-out;
+        padding-top: 30px;
+    }
+    .Mobile-Ce-Menu {
+        border-radius: 5px;
+        z-index: 99;
+        transition: background .5s ease-out;
+        position: absolute;
+        visibility: hidden;
+        font: inherit;
+        width: 350px;
+        top: auto;
+        right: 18px;
+        background-color: #bfbfbf;
+        overflow: auto;
+        overflow-x: hidden;
+        height: 500px;
+        margin: auto;
+        padding: 10px;
+        font-size: 25px
+    }
+    .mobilepanelHeader {
+        border: none;
+        border-radius: 0;
+        transition: background .5s ease-out;
+    }
+    .mobilepanelHeader:hover {
+        border-radius: 3px;
+        background-color: green;
+    }
+    .mobilepanelHeader:after,
+    .mobilepanelHeader:before {
+        content: "";
+        height: 8px;
+        display: inline;
+        height: 50%;
+        right: 15px;
+        position: absolute;
+        border-radius: 5px;
+        top: 50%;
+        transform: translateY(-50%) rotate(132deg);
+        transition: 0.2s ease-out;
+        background-color: white;
+    }
+    .mobilepanelHeader:after {
+        transform: translate(260%, -50%) rotate(226deg);
+    }
+    .icon {
+        width: 80px;
+    }
+    #shortM {
+        position: fixed;
+        margin: 20px;
+        width: auto;
+        right: 0px;
+        z-index: 99;
+    }
+    #Tmenu {
+        display: inline;
+        top: 15px;
+    }
+    .bbton {
+        background-color: white;
+        /* Green */
+        border: none;
+        color: black;
+        padding: 15px 15px;
+        padding-bottom: 10px;
+        text-align: center;
+        text-decoration: none;
+        font-size: 25px;
+        margin-bottom: 50px;
+        width: 80px;
+        height: 80px;
+    }
+    #touchElement-property {
+        font: inherit;
+        width: 240px;
+        top: 105px;
+        right: 120px;
+        position: absolute;
+        height: 310px;
+        margin: auto;
+        transition: background .5s ease-out;
+        z-index: 100;
+        visibility: hidden;
+    }
+    #touchElement-property:before {
+        position: absolute;
+        top: 144px;
+        content: "";
+        right: calc(50% - 143px);
+        border-style: solid;
+        border-width: 0px 30px 30px 30px;
+        border-color: transparent transparent #bfbfbf transparent;
+        transform: rotate(90deg);
+        transition: background .5s ease-out;
+    }
+    #Mobile-module-property {
+        font: inherit;
+        width: 350px;
+        top: 110px;
+        right: 140px;
+        background-color: goldenrod;
+        position: absolute;
+        overflow: scroll;
+        height: 500px;
+        visibility: none;
+        margin: auto;
+        transition: background .5s ease-out;
+        z-index: 100;
+        visibility: hidden;
+        padding: 5px;
+    }
+    #moduleProperty-inner-2 {
+        width: 85%;
+        margin: auto;
+        transition: background .5s ease-out;
+        z-index: 100;
+        font-size: 25px;
+        padding: 10px;
+    }
+    #moduleProperty-inner-2>p span {
+        display: inline-block;
+        font-weight: bold;
+    }
+    #moduleProperty-inner-2>p button {
+        border-radius: 2px;
+        margin: 3px;
+    }
+    #moduleProperty-inner-2:last-child {
+        margin-bottom: 15px;
+    }
+    .slider {
+        -webkit-transition: 0.2s all ease;
+        transition: background .5s ease-out;
+    }
+    .slider:before {
+        -webkit-transition: background .5s ease-out;
+        transition: background .5s ease-out;
+    }
+    input:checked+.slider:before {
+        transition: background .5s ease-out;
+    }
+}
+
+@media screen and (orientation:Landscape) and (max-device-width: 812px) {
+    .slider {
+        -webkit-transition: 0.2s all ease;
+        transition: background .5s ease-out;
+    }
+    .slider:before {
+        -webkit-transition: background .5s ease-out;
+        transition: background .5s ease-out;
+    }
+    input:checked+.slider:before {
+        transition: background .5s ease-out;
+    }
 }

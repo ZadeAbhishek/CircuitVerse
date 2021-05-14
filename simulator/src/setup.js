@@ -2,7 +2,7 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable guard-for-in */
 import * as metadata from './metadata.json';
-import { generateId, showMessage} from './utils';
+import { generateId, showMessage } from './utils';
 import backgroundArea from './backgroundArea';
 import plotArea from './plotArea';
 import simulationArea from './simulationArea';
@@ -23,7 +23,7 @@ import 'codemirror/mode/javascript/javascript.js'; // verilog.js from codemirror
 import 'codemirror/addon/edit/closebrackets.js';
 import 'codemirror/addon/hint/anyword-hint.js';
 import 'codemirror/addon/hint/show-hint.js';
-import {setupCodeMirrorEnvironment} from './Verilog2CV';
+import { setupCodeMirrorEnvironment } from './Verilog2CV';
 import { keyBinder } from './hotkey_binder/keyBinder';
 
 // TODO include subset of bootstrap we use instead of whole framework
@@ -135,7 +135,7 @@ function setupElementLists() {
         const categoryData = elementHierarchy[category];
         for (let i = 0; i < categoryData.length; i++) {
             const element = categoryData[i];
-            if(!element.startsWith("verilog")) {
+            if (!element.startsWith("verilog")) {
                 htmlIcons += createIcon(element);
                 window.elementPanelList.push(element);
             }
@@ -145,8 +145,13 @@ function setupElementLists() {
         <div class="panel customScroll">
         ${htmlIcons}
         </div>`;
+        const mobileaccordionData = `<div class="mobilepanelHeader">${category}</div>
+        <div class="panel customScroll">
+        ${htmlIcons}
+        </div>`;
 
         $('#menu').append(accordionData);
+        $('#menu2').append(mobileaccordionData);
     }
 }
 
@@ -160,8 +165,8 @@ export function setup() {
     setupEnvironment();
     if (!embed) { setupUI(); }
     startListeners();
-    if (!embed) { keyBinder();}
-    
+    if (!embed) { keyBinder(); }
+
     // Load project data after 1 second - needs to be improved, delay needs to be eliminated
     setTimeout(() => {
         if (__logix_project_id != 0) {
@@ -196,7 +201,7 @@ export function setup() {
     }, 1000);
 
     if (!localStorage.tutorials_tour_done && !embed) {
-        setTimeout(()=> {showTourGuide();}, 2000);
+        setTimeout(() => { showTourGuide(); }, 2000);
     }
-    
+
 }

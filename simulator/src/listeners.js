@@ -49,109 +49,551 @@ var ctxPos = {
 var pinY = 0;
 var pinX = 0;
 var hammerscale = 0;
+var lastTouchX = 0;
+var lastTouchY = 0;
+var touchStarted = false;
 
 
 window.onload = function() {
 
     var is_touch_device = 'ontouchstart' in simulationArea.canvas;
+    /* if (is_touch_device) {
+         $('#simulationArea').disableSelection();
+         var touchsimulatorlistner = document.querySelector('#simulationArea');
+         // const options = { passive: false }; // needed because Chrome has this set to "true" by default for "touchmove" events
+         var touchsimlatorevent = new Hammer(touchsimulatorlistner);
+         touchsimlatorevent.get('pinch').set({ enable: true });
+         touchsimlatorevent.get('pan').set({ direction: Hammer.DIRECTION_ALL });
+         touchsimlatorevent.get('rotate').set({ enable: true });
+         //touchsimlatorevent.get('pan').set({ threshold: 0 });
+
+         touchsimlatorevent.on("tap press panstart panmove panend pinchstart pinchin pinchout pinchmove pinchend", function(e) {
+             e.preventDefault();
+
+             if (e.type == "press") {
+                 console.log("DT");
+                 if (layoutModeGet()) return false; // Hide context menu when it is in Layout Mode
+                 $('#contextMenu').css({
+                     visibility: 'visible',
+                     opacity: 1,
+                     top: `${e.center.y}px`,
+                     left: `${e.center.x}px`,
+                 });
+                 ctxPos.visible = true;
+             }
+             if (e.type == "tap") {
+                 simulationArea.shiftDown = false;
+
+                 function getWidth() {
+                     return Math.max(
+                         document.body.scrollWidth,
+                         document.documentElement.scrollWidth,
+                         document.body.offsetWidth,
+                         document.documentElement.offsetWidth,
+                         document.documentElement.clientWidth
+                     );
+                 }
+                 // console.log(window.screen.width);
+                 simulationArea.touchX = e.center.x;
+                 simulationArea.touchY = e.center.y;
+                 ctxPos.visible = false;
+                 $('#contextMenu').css({
+                     visibility: 'invisible',
+                     opacity: 0,
+
+                 });
+                 ctxPos.visible = false;
+
+             }
+             if (e.type == "panstart") {
+                 // simulationArea.mouseX = e.center.x;
+                 //simulationArea.mouseY = e.center.y;
+                 console.log('pan on simulator');
+                 simulationArea.mouseDown = true;
+
+                 if (document.activeElement instanceof HTMLElement)
+                     document.activeElement.blur();
+
+                 errorDetectedSet(false);
+                 updateSimulationSet(true);
+                 updatePositionSet(true);
+                 updateCanvasSet(true);
+
+                 simulationArea.lastSelected = undefined;
+                 simulationArea.selected = false;
+                 simulationArea.hover = undefined;
+                 var rect = simulationArea.canvas.getBoundingClientRect();
+                 simulationArea.mouseDownRawX = (e.center.x - rect.left) * DPR;
+                 // alert((e.clientX - rect.left) * DPR);
+                 simulationArea.mouseDownRawY = (e.center.y - rect.top) * DPR;
+                 simulationArea.mouseDownX = Math.round(((simulationArea.mouseDownRawX - globalScope.ox) / globalScope.scale) / unit) * unit;
+                 simulationArea.mouseDownY = Math.round(((simulationArea.mouseDownRawY - globalScope.oy) / globalScope.scale) / unit) * unit;
+                 simulationArea.oldx = globalScope.ox;
+                 simulationArea.oldy = globalScope.oy;
+
+
+                 e.preventDefault();
+                 scheduleBackup();
+                 scheduleUpdate(1);
+                 $('.dropdown.open').removeClass('open');
+             }
+             if (e.type == "panmove") {
+                 simulationArea.touchmove = true;
+                 console.log('panmove on simulator');
+                 simulationArea.touchX = e.center.x;
+                 simulationArea.touchY = e.center.y;
+                 var rect = simulationArea.canvas.getBoundingClientRect();
+                 //  console.log(X);
+                 //console.log(Y);
+                 simulationArea.mouseRawX = (e.center.x - rect.left) * DPR;
+                 simulationArea.mouseRawY = (e.center.y - rect.top) * DPR;
+                 simulationArea.mouseXf = (simulationArea.mouseRawX - globalScope.ox) / globalScope.scale;
+                 simulationArea.mouseYf = (simulationArea.mouseRawY - globalScope.oy) / globalScope.scale;
+                 simulationArea.mouseX = Math.round(simulationArea.mouseXf / unit) * unit;
+                 simulationArea.mouseY = Math.round(simulationArea.mouseYf / unit) * unit;
+                 // console.log(simulationArea.mouseY);
+                 updateCanvasSet(true);
+
+                 if (simulationArea.lastSelected && (simulationArea.mouseDown || simulationArea.lastSelected.newElement)) {
+                     updateCanvasSet(true);
+                     var fn;
+
+                     if (simulationArea.lastSelected == globalScope.root) {
+                         fn = function() {
+                             updateSelectionsAndPane();
+                         };
+                     } else {
+                         fn = function() {
+                             if (simulationArea.lastSelected) { simulationArea.lastSelected.update(); }
+                         };
+                     }
+                     scheduleUpdate(0, 20, fn);
+                 } else {
+                     scheduleUpdate(0, 200);
+                 }
+                 e.preventDefault();
+
+             }
+             if (e.type == "panend") {
+                 simulationArea.mouseDown = false;
+                 if (!lightMode) {
+                     updatelastMinimapShown();
+                     setTimeout(removeMiniMap, 2000);
+                 }
+
+                 errorDetectedSet(false);
+                 updateSimulationSet(true);
+                 updatePositionSet(true);
+                 updateCanvasSet(true);
+                 gridUpdateSet(true);
+                 wireToBeCheckedSet(1);
+
+                 scheduleUpdate(1);
+                 simulationArea.mouseDown = false;
+
+                 for (var i = 0; i < 2; i++) {
+                     updatePositionSet(true);
+                     wireToBeCheckedSet(1);
+                     update();
+                 }
+                 errorDetectedSet(false);
+                 updateSimulationSet(true);
+                 updatePositionSet(true);
+                 updateCanvasSet(true);
+                 gridUpdateSet(true);
+                 wireToBeCheckedSet(1);
+
+                 scheduleUpdate(1);
+                 var rect = simulationArea.canvas.getBoundingClientRect();
+
+                 if (!(simulationArea.mouseRawX < 0 || simulationArea.mouseRawY < 0 || simulationArea.mouseRawX > width || simulationArea.mouseRawY > height)) {
+                     uxvar.smartDropXX = simulationArea.mouseX + 100; // Math.round(((simulationArea.mouseRawX - globalScope.ox+100) / globalScope.scale) / unit) * unit;
+                     uxvar.smartDropYY = simulationArea.mouseY - 50; // Math.round(((simulationArea.mouseRawY - globalScope.oy+100) / globalScope.scale) / unit) * unit;
+                 }
+             }
+
+
+         });*/
+
+    var B1 = document.querySelector('#B1');
+    var Mobile_CE_Menu = document.getElementById('menu2');
+    var B1_listner_hammer = new Hammer(B1);
+
+    B1_listner_hammer.on("tap", function(ev) {
+
+
+        if (ev.type === "tap") {
+            console.log("Tap on B1");
+            if (Mobile_Module_Menu.style.visibility === "visible") {
+                Mobile_Module_Menu.style.visibility = "hidden";
+                document.getElementById('touchElement-property').style.visibility = "hidden";
+
+            }
+            if (Mobile_CE_Menu.style.visibility === "visible") {
+                Mobile_CE_Menu.style.visibility = "hidden";
+                document.getElementsByClassName("Mobile-Ce-Menu")[0].style.visibility = "hidden";
+                document.getElementById("TouchCe-panel").style.visibility = "hidden";
+                document.getElementById("B1").style.color = "black";
+            } else {
+                Mobile_CE_Menu.style.visibility = "visible";
+                document.getElementsByClassName("Mobile-Ce-Menu")[0].style.visibility = "visible"
+                document.getElementById("TouchCe-panel").style.visibility = "visible";
+                document.getElementById("B1").style.color = "red";
+            }
+        }
+
+    });
+
+
+    var B2 = document.querySelector('#B2');
+    var Mobile_Module_Menu = document.getElementById('Mobile-module-property');
+    var B2_listner_hammer = new Hammer(B2);
+
+    B2_listner_hammer.on("tap", function(ev) {
+
+
+        if (ev.type === "tap") {
+            if (Mobile_CE_Menu.style.visibility === "visible") {
+                Mobile_CE_Menu.style.visibility = "hidden";
+                document.getElementsByClassName("Mobile-Ce-Menu")[0].style.visibility = "hidden";
+                document.getElementById("TouchCe-panel").style.visibility = "hidden";
+                document.getElementById("B1").style.color = "black";
+
+            }
+            console.log("Tap on B2");
+            if (Mobile_Module_Menu.style.visibility === "visible") {
+                Mobile_Module_Menu.style.visibility = "hidden";
+                document.getElementById('touchElement-property').style.visibility = "hidden";
+
+            } else {
+                Mobile_Module_Menu.style.visibility = "visible";
+                document.getElementById('touchElement-property').style.visibility = "visible";
+            }
+        }
+
+    });
+
+    var B3 = document.querySelector('#B3');
+    var mobile_time_diagram = document.getElementById('mobile-time-daigram');
+    var B3_listner_hammer = new Hammer(B3);
+
+    B3_listner_hammer.on("tap", function(ev) {
+
+
+        if (ev.type === "tap") {
+            if (mobile_time_diagram.style.visibility === "visible") {
+                mobile_time_diagram.style.visibility = "hidden";
+                document.getElementsByClassName("mobile-navbar")[0].style.height = "100%";
+
+            } else {
+                mobile_time_diagram.style.visibility = "visible";
+            }
+            console.log("Tap on B3");
+
+
+        }
+
+
+    });
+
+
+    var navclose = document.querySelector('#navbar-closeBtn');
+    //var closeElem = document.getElementById('mobile-navbar');
+    var navclose_listner_hammer = new Hammer(navclose);
+
+    navclose_listner_hammer.on("tap", function(ev) {
+
+
+        if (ev.type === "tap") {
+            document.getElementsByClassName("mobile-navbar")[0].style.height = "0%";
+        }
+
+
+    });
+
+
+    //write function for closing of navbar--
+    function closeNav() {
+        document.getElementById("myNav").style.height = "0%";
+    }
+
+    var collapsible = document.getElementsByClassName("mobile-collapsible");
+    var i;
+
+    for (i = 0; i < collapsible.length; i++) {
+        collapsible[i].addEventListener("click", function() {
+            this.classList.toggle("active");
+            var content = this.nextElementSibling;
+            if (content.style.display === "block") {
+                content.style.display = "none";
+            } else {
+                content.style.display = "block";
+            }
+        });
+    }
+
+
+
+
+    var quick_btn = document.querySelector('#quick-btn');
+    var quick_btn_listner = document.getElementById('quick-btn');
+    var quick_btn_hammer = new Hammer(quick_btn);
+    var timing_btn = document.querySelector('#timingguide');
+    var timing_btb_listner = document.getElementById('timingguide');
+    var timing_btn_hammer = new Hammer(timing_btn);
+    var panel_header = document.querySelector('#guide_1');
+    var panel_header_style = document.getElementById('guide_1');
+    var panel_header_2 = document.querySelector('#moduleProperty');
+    var panel_header_style_2 = document.getElementById('moduleProperty');
+    var panel_header_hammer = new Hammer(panel_header);
+    var panel_header_hammer_2 = new Hammer(panel_header_2);
+
+    quick_btn_hammer.on("panmove panend tap", function(ev) {
+
+
+        // Hold gesture start (press)
+        if (ev.type == "panmove") {
+            console.log("Hold active");
+            console.log(ev);
+            if (!isDragging) {
+                isDragging = true;
+                lastPosX = quick_btn_listner.offsetLeft;
+                lastPosY = quick_btn_listner.offsetTop;
+            }
+
+            var posX = ev.deltaX + lastPosX;
+            var posY = ev.deltaY + lastPosY;
+            quick_btn_listner.style.left = posX + "px";
+            quick_btn_listner.style.top = posY + "px";
+
+
+        }
+
+        // Hold gesture stop (pressup)
+        if (ev.type == "panend") {
+            if (ev.isFinal) {
+                isDragging = false;
+            }
+
+
+        }
+
+        if (ev.type == "tap") {
+            console.log('tap');
+            panel_header_style.click();
+
+        }
+    });
+    timing_btn_hammer.on("panmove panend", function(ev) {
+
+        if (ev.type == "panstart") {
+            $('.timing-diagram-panel').draggable().draggable("enable");
+            timing_btb_listner.style.position = "absolute";
+        }
+        // Hold gesture start (press)
+        if (ev.type == "panmove") {
+
+            console.log("Hold active");
+            console.log(ev);
+            if (!isDragging) {
+                isDragging = true;
+                lastPosX = timing_btb_listner.offsetLeft;
+                lastPosY = timing_btb_listner.offsetTop;
+            }
+
+            var posX = ev.deltaX + lastPosX;
+            var posY = ev.deltaY + lastPosY;
+            timing_btb_listner.style.left = posX + "px";
+            timing_btb_listner.style.top = posY + "px";
+
+
+
+
+        }
+
+        // Hold gesture stop (pressup)
+        if (ev.type == "panend") {
+            if (ev.isFinal) {
+                isDragging = false;
+            }
+
+
+        }
+        timing_btb_listner.style.position = "fixed";
+    });
+
+
+
+    panel_header_hammer.on("panmove panend tap", function(ev) {
+
+
+        // Hold gesture start (press)
+        if (ev.type == "panmove") {
+            console.log("Hold active");
+            console.log(ev);
+            if (!isDragging) {
+                isDragging = true;
+                lastPosX = panel_header_style.offsetLeft;
+                lastPosY = panel_header_style.offsetTop;
+            }
+
+            var posX = ev.deltaX + lastPosX;
+            var posY = ev.deltaY + lastPosY;
+            panel_header_style.style.left = posX + "px";
+            panel_header_style.style.top = posY + "px";
+
+
+        }
+
+        // Hold gesture stop (pressup)
+        if (ev.type == "panend") {
+            if (ev.isFinal) {
+                isDragging = false;
+            }
+
+
+        }
+
+        if (ev.type == "tap") {
+            console.log('tap');
+            panel_header_style.click();
+
+        }
+    });
+    panel_header_hammer_2.on("panmove panend", function(ev) {
+
+
+        // Hold gesture start (press)
+        if (ev.type == "panmove") {
+            console.log("Hold active");
+            console.log(ev);
+            if (!isDragging) {
+                isDragging = true;
+                lastPosX = panel_header_style_2.offsetLeft;
+                lastPosY = panel_header_style_2.offsetTop;
+            }
+
+            var posX = ev.deltaX + lastPosX;
+            var posY = ev.deltaY + lastPosY;
+            panel_header_style_2.style.left = posX + "px";
+            panel_header_style_2.style.top = posY + "px";
+
+
+        }
+
+        // Hold gesture stop (pressup)
+        if (ev.type == "panend") {
+            if (ev.isFinal) {
+                isDragging = false;
+            }
+
+
+        }
+    });
+
+    // Native version for Tocuch
+    var is_touch_device = 'ontouchstart' in simulationArea.canvas;
+    var panstart = false;
+    var distance
+    var currDistance
+    var PinToZoom;
     if (is_touch_device) {
-        $('#simulationArea').disableSelection();
-        var touchsimulatorlistner = document.querySelector('#simulationArea');
-        // const options = { passive: false }; // needed because Chrome has this set to "true" by default for "touchmove" events
-        var touchsimlatorevent = new Hammer(touchsimulatorlistner);
-        touchsimlatorevent.get('pinch').set({ enable: true });
-        touchsimlatorevent.get('pan').set({ direction: Hammer.DIRECTION_ALL });
-        touchsimlatorevent.get('rotate').set({ enable: true });
-        //touchsimlatorevent.get('pan').set({ threshold: 0 });
 
-        touchsimlatorevent.on("tap press panstart panmove panend pinchstart pinchin pinchout pinchmove pinchend", function(e) {
-            e.preventDefault();
-            var X = e.center.x;
-            var Y = e.center.y;
-            if (e.type == "press") {
-                console.log("DT");
-                if (layoutModeGet()) return false; // Hide context menu when it is in Layout Mode
-                $('#contextMenu').css({
-                    visibility: 'visible',
-                    opacity: 1,
-                    top: `${e.center.y}px`,
-                    left: `${e.center.x}px`,
-                });
-                ctxPos.visible = true;
-            }
-            if (e.type == "tap") {
-                simulationArea.shiftDown = false;
+        document.getElementById('simulationArea').addEventListener('touchstart', (e) => {
+            touchStarted = true;
+            console.log('pan on simulator');
+            console.log(e.changedTouches[0].clientX);
+            simulationArea.mouseDown = true;
 
-                function getWidth() {
-                    return Math.max(
-                        document.body.scrollWidth,
-                        document.documentElement.scrollWidth,
-                        document.body.offsetWidth,
-                        document.documentElement.offsetWidth,
-                        document.documentElement.clientWidth
-                    );
+            if (document.activeElement instanceof HTMLElement)
+                document.activeElement.blur();
+
+            errorDetectedSet(false);
+            updateSimulationSet(true);
+            updatePositionSet(true);
+            updateCanvasSet(true);
+
+            simulationArea.lastSelected = undefined;
+            simulationArea.selected = false;
+            simulationArea.hover = undefined;
+            var rect = simulationArea.canvas.getBoundingClientRect();
+            simulationArea.mouseDownRawX = (e.touches[0].clientX - rect.left) * DPR;
+            // alert((e.clientX - rect.left) * DPR);
+            simulationArea.mouseDownRawY = (e.touches[0].clientY - rect.top) * DPR;
+            simulationArea.mouseDownX = Math.round(((simulationArea.mouseDownRawX - globalScope.ox) / globalScope.scale) / unit) * unit;
+            simulationArea.mouseDownY = Math.round(((simulationArea.mouseDownRawY - globalScope.oy) / globalScope.scale) / unit) * unit;
+            simulationArea.touchX = simulationArea.mouseDownX;
+            simulationArea.touchY = simulationArea.mouseDownY;
+            simulationArea.oldx = globalScope.ox;
+            simulationArea.oldy = globalScope.oy;
+
+            setTimeout(function() {
+
+                if ((simulationArea.touchX === simulationArea.mouseDownX) && !touchStarted && (simulationArea.touchY === simulationArea.mouseDownY)) {
+                    // Here you get the Tap event
+                    console.log('Tap');
+                    simulationArea.mouseX = simulationArea.mouseDownX;
+                    simulationArea.mouseY = simulationArea.mouseDownY;
                 }
-                console.log(window.screen.width);
-                simulationArea.touchX = e.center.x;
-                simulationArea.touchY = e.center.y;
-                ctxPos.visible = false;
-                $('#contextMenu').css({
-                    visibility: 'invisible',
-                    opacity: 0,
+            }, 200);
 
-                });
-                ctxPos.visible = false;
-                //$('#moduleProperty').hide();
 
+            e.preventDefault();
+            scheduleBackup();
+            scheduleUpdate(1);
+            $('.dropdown.open').removeClass('open');
+            panstart = false;
+
+        });
+        document.getElementById('simulationArea').addEventListener('touchend', (e) => {
+            console.log('panstop on simulator')
+            PinToZoom = false;
+            panstart = false;
+            touchStarted = false;
+            simulationArea.mouseDown = false;
+            simulationArea.lastSelected.update();
+            if (!lightMode) {
+                updatelastMinimapShown();
+                setTimeout(removeMiniMap, 2000);
             }
-            if (e.type == "panstart") {
-                console.log('pan on simulator');
-                simulationArea.mouseDown = true;
-
-                //console.log(X);
-                // console.log(Y);
-
-                // Deselect Input
-                if (document.activeElement instanceof HTMLElement)
-                    document.activeElement.blur();
-
-                errorDetectedSet(false);
-                updateSimulationSet(true);
+            for (var i = 0; i < 2; i++) {
                 updatePositionSet(true);
-                updateCanvasSet(true);
-
-                simulationArea.lastSelected = undefined;
-                simulationArea.selected = false;
-                simulationArea.hover = undefined;
-                var rect = simulationArea.canvas.getBoundingClientRect();
-                simulationArea.mouseDownRawX = (e.center.x - rect.left) * DPR;
-                // alert((e.clientX - rect.left) * DPR);
-                simulationArea.mouseDownRawY = (e.center.y - rect.top) * DPR;
-                simulationArea.mouseDownX = Math.round(((simulationArea.mouseDownRawX - globalScope.ox) / globalScope.scale) / unit) * unit;
-                simulationArea.mouseDownY = Math.round(((simulationArea.mouseDownRawY - globalScope.oy) / globalScope.scale) / unit) * unit;
-                simulationArea.oldx = globalScope.ox;
-                simulationArea.oldy = globalScope.oy;
-
-
-                e.preventDefault();
-                scheduleBackup();
-                scheduleUpdate(1);
-                $('.dropdown.open').removeClass('open');
+                wireToBeCheckedSet(1);
+                update();
             }
-            if (e.type == "panmove") {
+
+            errorDetectedSet(false);
+            updateSimulationSet(true);
+            updatePositionSet(true);
+            updateCanvasSet(true);
+            gridUpdateSet(true);
+            wireToBeCheckedSet(1);
+
+            scheduleUpdate(1);
+            simulationArea.mouseDown = false;
+            panstart = false;
+
+        });
+
+        document.getElementById('simulationArea').addEventListener('touchmove', (e) => {
+            console.log(e.touches.length);
+            if (e.touches.length === 1) {
                 simulationArea.touchmove = true;
+                simulationArea.mouseDown = true;
+                panstart = true;
                 console.log('panmove on simulator');
-                simulationArea.touchX = e.center.x;
-                simulationArea.touchY = e.center.y;
+
                 var rect = simulationArea.canvas.getBoundingClientRect();
                 //  console.log(X);
                 //console.log(Y);
-                simulationArea.mouseRawX = (e.center.x - rect.left) * DPR;
-                simulationArea.mouseRawY = (e.center.y - rect.top) * DPR;
+                simulationArea.mouseRawX = (e.touches[0].clientX - rect.left) * DPR;
+                simulationArea.mouseRawY = (e.touches[0].clientY - rect.top) * DPR;
                 simulationArea.mouseXf = (simulationArea.mouseRawX - globalScope.ox) / globalScope.scale;
                 simulationArea.mouseYf = (simulationArea.mouseRawY - globalScope.oy) / globalScope.scale;
                 simulationArea.mouseX = Math.round(simulationArea.mouseXf / unit) * unit;
                 simulationArea.mouseY = Math.round(simulationArea.mouseYf / unit) * unit;
+                simulationArea.touchX = simulationArea.mouseX;
+                simulationArea.touchY = simulationArea.mouseY;
                 // console.log(simulationArea.mouseY);
                 updateCanvasSet(true);
 
@@ -173,399 +615,198 @@ window.onload = function() {
                     scheduleUpdate(0, 200);
                 }
                 e.preventDefault();
-
             }
-            if (e.type == "panend") {
-                simulationArea.mouseDown = false;
-                if (!lightMode) {
-                    updatelastMinimapShown();
-                    setTimeout(removeMiniMap, 2000);
-                }
-
-                errorDetectedSet(false);
-                updateSimulationSet(true);
-                updatePositionSet(true);
-                updateCanvasSet(true);
-                gridUpdateSet(true);
-                wireToBeCheckedSet(1);
-
-                scheduleUpdate(1);
-                simulationArea.mouseDown = false;
-
-                for (var i = 0; i < 2; i++) {
-                    updatePositionSet(true);
-                    wireToBeCheckedSet(1);
-                    update();
-                }
-                errorDetectedSet(false);
-                updateSimulationSet(true);
-                updatePositionSet(true);
-                updateCanvasSet(true);
-                gridUpdateSet(true);
-                wireToBeCheckedSet(1);
-
-                scheduleUpdate(1);
-                var rect = simulationArea.canvas.getBoundingClientRect();
-
-                if (!(simulationArea.mouseRawX < 0 || simulationArea.mouseRawY < 0 || simulationArea.mouseRawX > width || simulationArea.mouseRawY > height)) {
-                    uxvar.smartDropXX = simulationArea.mouseX + 100; // Math.round(((simulationArea.mouseRawX - globalScope.ox+100) / globalScope.scale) / unit) * unit;
-                    uxvar.smartDropYY = simulationArea.mouseY - 50; // Math.round(((simulationArea.mouseRawY - globalScope.oy+100) / globalScope.scale) / unit) * unit;
-                }
-            }
-
-            /* if (e.type == "pinchstart") {
-                 var pinchX = e.center.x;
-                 var pinchY = e.center.y;
-                 pinchstart = true;
-             }
+            /*if (e.touches.length === 2) {
+                simulationArea.touchmove = true;
+                simulationArea.mouseDown = true;
+                panstart = true;
+                PinToZoom = true;
+                //native pinch zoom algorithm 
+                var pinchZ;
+                distance = Math.sqrt(
+                    (e.touches[0].clientX - e.touches[1].clientX) * (e.touches[0].clientX - e.touches[1].clientX),
+                    (e.touches[0].clientY - e.touches[1].clientY) * (e.touches[0].clientY - e.touches[1].clientY));
+                console.log(distance);
+                var centreX = (e.touches[0].clientX + e.touches[1].clientX) / 2
+                var centreY = (e.touches[0].clientY + e.touches[1].clientY) / 2
+                if (distance >= currDistance) {
+                    console.log("zoomIn");
+                    pinchZ = (distance - currDistance) / 3;
+                    //changeScale(pinchZ);
+                    if (pinchZ > 7) { pinchZ = 7 } else if (pinchZ < 2) { pinchZ = 2 };
+                    currDistance = distance;
+                    console.log(`pinchZ${pinchZ}`)
+                    if (PinToZoom) {
+                        //pinch logic previous 
+                        var oldScale = globalScope.scale;
+                        globalScope.scale = Math.max(0.5, Math.min(4 * DPR, pinchZ));
+                        globalScope.scale = Math.round(globalScope.scale * 10) / 10;
+                        globalScope.ox -= Math.round(centreX * (globalScope.scale - oldScale)); // Shift accordingly, so that we zoom wrt to the selected point
+                        globalScope.oy -= Math.round(centreY * (globalScope.scale - oldScale));
+                        // dots(true,false);
 
 
-             if (e.type == "pinchin") {
+                        // MiniMap
+                        if (!embed && !lightMode) {
+                            findDimensions(globalScope);
+                            miniMapArea.setup();
+                            $('#miniMap').show();
+                            updatelastMinimapShown();
+                            $('#miniMap').show();
+                            setTimeout(removeMiniMap, 2000);
+                        }
+                    }
+                    // fn to draw Dots on screen
+                    // the function is called only when the zoom level or size of screen changes.
+                    // Otherwise for normal panning, the canvas itself is moved to give the illusion of movement
 
-                 setTimeout(() => {
-                     console.log(JSON.stringify(e));
-                     if (pinchstart === true) {
-                         changeScale(-0.1 * 2, pinchX, pinchY);
-                     }
-                     gridUpdateSet(true);
+                    var transparentBackground = false;
+                    var force = false;
 
-                 }, 50);
+                    var scale = unit * globalScope.scale;
+                    var ox = globalScope.ox % scale; // offset
+                    var oy = globalScope.oy % scale; // offset
 
+                    document.getElementById('backgroundArea').style.left = (ox - scale) / DPR;
+                    document.getElementById('backgroundArea').style.top = (oy - scale) / DPR;
+                    if (globalScope.scale === simulationArea.prevScale && !force) return;
 
-             }
-             if (e.type == "pinchout") {
-                 changeScale(0.1 * 2, pinchX, pinchY);
-                 gridUpdateSet(true);
-             }
-             if (e.type == "pinchend") {
-                 console.log('end');
-                 gridUpdateSet(true);
-                 pinchstart = false;
+                    if (!backgroundArea.context) return;
+                    simulationArea.prevScale = globalScope.scale;
 
+                    var canvasWidth = backgroundArea.canvas.width; // max X distance
+                    var canvasHeight = backgroundArea.canvas.height; // max Y distance
 
-             }*/
+                    var ctx = backgroundArea.context;
+                    ctx.beginPath();
+                    backgroundArea.clear();
+                    ctx.strokeStyle = colors["canvas_stroke"];
+                    ctx.lineWidth = 1;
+                    if (!transparentBackground) {
+                        ctx.fillStyle = colors["canvas_fill"];
+                        ctx.rect(0, 0, canvasWidth, canvasHeight);
+                        ctx.fill();
+                    }
 
+                    if (!embed) {
+                        var correction = 0.5 * (ctx.lineWidth % 2);
+                        for (var i = 0; i < canvasWidth; i += scale) {
+                            ctx.moveTo(Math.round(i + correction) - correction, 0);
+                            ctx.lineTo(Math.round(i + correction) - correction, canvasHeight);
+                        }
+                        for (var j = 0; j < canvasHeight; j += scale) {
+                            ctx.moveTo(0, Math.round(j + correction) - correction);
+                            ctx.lineTo(canvasWidth, Math.round(j + correction) - correction);
+                        }
+                        ctx.stroke();
+                    }
 
-        });
-        touchsimlatorevent.on('pinch pinchmove', ev => {
-            /* displayImageCurrentScale = clampScale(ev.scale * displayImageScale);
-             updateRange();
-             displayImageCurrentX = clamp(displayImageX + ev.deltaX, rangeMinX, rangeMaxX);
-             displayImageCurrentY = clamp(displayImageY + ev.deltaY, rangeMinY, rangeMaxY);
-             updateDisplayImage(displayImageCurrentX, displayImageCurrentY, displayImageCurrentScale);*/
-            //console.log("PICH works herer");
-            //changeScale(ev.scale);
-
-
-
-
-
-            //updateCanvasSet(true);
-
-            console.log(` EV.scale:${ev.scale}`);
-            console.log(`GlobalSope:${globalScope.scale}`);
-            console.log(` Hammer scale:${hammerscale}`);
-            var oldScale = globalScope.scale;
-            hammerscale = ev.scale;
-            // if (hammerscale >= 1.9) { hammerscale = 1.9 }
-            globalScope.scale = Math.max(0.5, Math.min(4 * DPR, hammerscale * 5));
-            globalScope.scale = Math.round(globalScope.scale * 10) / 10;
-            if (globalScope.scale >= 7.5) { globalScope.scale = 7.5 }
-            //if (globalScope.scale < 2) { globalScope.scale = 2 };
-            if (simulationArea.lastSelected && simulationArea.lastSelected.objectType !== 'Wire') { // selected object
-                pinX = simulationArea.lastSelected.x + ev.deltaX;
-                pinY = simulationArea.lastSelected.y + ev.deltaY;
-            } else {
-                pinY = ev.center.y;
-                pinX = ev.center.x;
-            }
-
-            globalScope.ox -= Math.round(pinX * ((globalScope.scale) - oldScale)); // Shift accordingly, so that we zoom wrt to the selected point
-            globalScope.oy -= Math.round(pinY * ((globalScope.scale) - oldScale));
-            // if (globalScope.scale < 7.5 && globalScope > 3.5) {
-            var scale = unit * globalScope.scale;
-            var ox = globalScope.ox % scale; // offset
-            var oy = globalScope.oy % scale; // offset
-            var transparentBackground = false;
-            var force = false;
-            document.getElementById('backgroundArea').style.left = (ox - scale) / DPR;
-            document.getElementById('backgroundArea').style.top = (oy - scale) / DPR;
-            if (globalScope.scale === simulationArea.prevScale && !force) return;
-
-            if (!backgroundArea.context) return;
-            simulationArea.prevScale = globalScope.scale;
-
-            var canvasWidth = backgroundArea.canvas.width; // max X distance
-            var canvasHeight = backgroundArea.canvas.height; // max Y distance
-
-            var ctx = backgroundArea.context;
-            ctx.beginPath();
-            backgroundArea.clear();
-            ctx.strokeStyle = colors["canvas_stroke"];
-            ctx.lineWidth = 1;
-            if (!transparentBackground) {
-                ctx.fillStyle = colors["canvas_fill"];
-                ctx.rect(0, 0, canvasWidth, canvasHeight);
-                ctx.fill();
-            }
-
-            if (!embed) {
-                var correction = 0.5 * (ctx.lineWidth % 2);
-                for (var i = 0; i < canvasWidth; i += scale) {
-                    ctx.moveTo(Math.round(i + correction) - correction, 0);
-                    ctx.lineTo(Math.round(i + correction) - correction, canvasHeight);
-                }
-                for (var j = 0; j < canvasHeight; j += scale) {
-                    ctx.moveTo(0, Math.round(j + correction) - correction);
-                    ctx.lineTo(canvasWidth, Math.round(j + correction) - correction);
-                }
-                ctx.stroke();
-            }
-
-
-            //  gridUpdateSet(true);
-            //  updateCanvasSet(true);
-            updateCanvasSet(true);
-            updateSimulationSet(true);
-            updatePositionSet(true);
-            gridUpdateSet(true);
-            wireToBeCheckedSet(1);
-            scheduleUpdate(1);
-
-
-
-
-
-
-        });
-        touchsimlatorevent.on('pinchend', ev => {
-            updateCanvasSet(true);
-            updateSimulationSet(true);
-            updatePositionSet(true);
-            gridUpdateSet(true);
-            wireToBeCheckedSet(1);
-            scheduleUpdate(1);
-
-        });
-
-        var B1 = document.querySelector('#B1');
-        var Mobile_CE_Menu = document.getElementById('menu2');
-        var B1_listner_hammer = new Hammer(B1);
-
-        B1_listner_hammer.on("tap", function(ev) {
-
-
-            if (ev.type === "tap") {
-                console.log("Tap on B1");
-                if (Mobile_Module_Menu.style.visibility === "visible") {
-                    Mobile_Module_Menu.style.visibility = "hidden";
-                    document.getElementById('touchElement-property').style.visibility = "hidden";
+                } else if (distance <= currDistance) {
+                    console.log("zoomout");
+                    pinchZ = (distance - currDistance) / 3;
+                    //changeScale(pinchZ);
 
                 }
-                if (Mobile_CE_Menu.style.visibility === "visible") {
-                    Mobile_CE_Menu.style.visibility = "hidden";
-                    document.getElementsByClassName("Mobile-Ce-Menu")[0].style.visibility = "hidden";
-                    document.getElementById("TouchCe-panel").style.visibility = "hidden";
-                    document.getElementById("B1").style.color = "black";
-                } else {
-                    Mobile_CE_Menu.style.visibility = "visible";
-                    document.getElementsByClassName("Mobile-Ce-Menu")[0].style.visibility = "visible"
-                    document.getElementById("TouchCe-panel").style.visibility = "visible";
-                    document.getElementById("B1").style.color = "red";
-                }
-            }
+
+
+            }*/
+
 
         });
 
 
-        var B2 = document.querySelector('#B2');
-        var Mobile_Module_Menu = document.getElementById('Mobile-module-property');
-        var B2_listner_hammer = new Hammer(B2);
-
-        B2_listner_hammer.on("tap", function(ev) {
-
-
-            if (ev.type === "tap") {
-                if (Mobile_CE_Menu.style.visibility === "visible") {
-                    Mobile_CE_Menu.style.visibility = "hidden";
-                    document.getElementsByClassName("Mobile-Ce-Menu")[0].style.visibility = "hidden";
-                    document.getElementById("TouchCe-panel").style.visibility = "hidden";
-                    document.getElementById("B1").style.color = "black";
-
-                }
-                console.log("Tap on B2");
-                if (Mobile_Module_Menu.style.visibility === "visible") {
-                    Mobile_Module_Menu.style.visibility = "hidden";
-                    document.getElementById('touchElement-property').style.visibility = "hidden";
-
-                } else {
-                    Mobile_Module_Menu.style.visibility = "visible";
-                    document.getElementById('touchElement-property').style.visibility = "visible";
-                }
-            }
-
-        });
-
-
-
-
-
-        var quick_btn = document.querySelector('#quick-btn');
-        var quick_btn_listner = document.getElementById('quick-btn');
-        var quick_btn_hammer = new Hammer(quick_btn);
-        var timing_btn = document.querySelector('#timingguide');
-        var timing_btb_listner = document.getElementById('timingguide');
-        var timing_btn_hammer = new Hammer(timing_btn);
-        var panel_header = document.querySelector('#guide_1');
-        var panel_header_style = document.getElementById('guide_1');
-        var panel_header_2 = document.querySelector('#moduleProperty');
-        var panel_header_style_2 = document.getElementById('moduleProperty');
-        var panel_header_hammer = new Hammer(panel_header);
-        var panel_header_hammer_2 = new Hammer(panel_header_2);
-
-        quick_btn_hammer.on("panmove panend tap", function(ev) {
-
-
-            // Hold gesture start (press)
-            if (ev.type == "panmove") {
-                console.log("Hold active");
-                console.log(ev);
-                if (!isDragging) {
-                    isDragging = true;
-                    lastPosX = quick_btn_listner.offsetLeft;
-                    lastPosY = quick_btn_listner.offsetTop;
-                }
-
-                var posX = ev.deltaX + lastPosX;
-                var posY = ev.deltaY + lastPosY;
-                quick_btn_listner.style.left = posX + "px";
-                quick_btn_listner.style.top = posY + "px";
-
-
-            }
-
-            // Hold gesture stop (pressup)
-            if (ev.type == "panend") {
-                if (ev.isFinal) {
-                    isDragging = false;
-                }
-
-
-            }
-
-            if (ev.type == "tap") {
-                console.log('tap');
-                panel_header_style.click();
-
-            }
-        });
-        timing_btn_hammer.on("panmove panend", function(ev) {
-
-            if (ev.type == "panstart") {
-                $('.timing-diagram-panel').draggable().draggable("enable");
-                timing_btb_listner.style.position = "absolute";
-            }
-            // Hold gesture start (press)
-            if (ev.type == "panmove") {
-
-                console.log("Hold active");
-                console.log(ev);
-                if (!isDragging) {
-                    isDragging = true;
-                    lastPosX = timing_btb_listner.offsetLeft;
-                    lastPosY = timing_btb_listner.offsetTop;
-                }
-
-                var posX = ev.deltaX + lastPosX;
-                var posY = ev.deltaY + lastPosY;
-                timing_btb_listner.style.left = posX + "px";
-                timing_btb_listner.style.top = posY + "px";
-
-
-
-
-            }
-
-            // Hold gesture stop (pressup)
-            if (ev.type == "panend") {
-                if (ev.isFinal) {
-                    isDragging = false;
-                }
-
-
-            }
-            timing_btb_listner.style.position = "fixed";
-        });
-
-
-
-        panel_header_hammer.on("panmove panend tap", function(ev) {
-
-
-            // Hold gesture start (press)
-            if (ev.type == "panmove") {
-                console.log("Hold active");
-                console.log(ev);
-                if (!isDragging) {
-                    isDragging = true;
-                    lastPosX = panel_header_style.offsetLeft;
-                    lastPosY = panel_header_style.offsetTop;
-                }
-
-                var posX = ev.deltaX + lastPosX;
-                var posY = ev.deltaY + lastPosY;
-                panel_header_style.style.left = posX + "px";
-                panel_header_style.style.top = posY + "px";
-
-
-            }
-
-            // Hold gesture stop (pressup)
-            if (ev.type == "panend") {
-                if (ev.isFinal) {
-                    isDragging = false;
-                }
-
-
-            }
-
-            if (ev.type == "tap") {
-                console.log('tap');
-                panel_header_style.click();
-
-            }
-        });
-        panel_header_hammer_2.on("panmove panend", function(ev) {
-
-
-            // Hold gesture start (press)
-            if (ev.type == "panmove") {
-                console.log("Hold active");
-                console.log(ev);
-                if (!isDragging) {
-                    isDragging = true;
-                    lastPosX = panel_header_style_2.offsetLeft;
-                    lastPosY = panel_header_style_2.offsetTop;
-                }
-
-                var posX = ev.deltaX + lastPosX;
-                var posY = ev.deltaY + lastPosY;
-                panel_header_style_2.style.left = posX + "px";
-                panel_header_style_2.style.top = posY + "px";
-
-
-            }
-
-            // Hold gesture stop (pressup)
-            if (ev.type == "panend") {
-                if (ev.isFinal) {
-                    isDragging = false;
-                }
-
-
-            }
-        });
     }
+
+    //Implementation of Hammer Js 
+
+    var SimulaTionPinchevent = new Hammer(document.querySelector('#simulationArea'));
+    SimulaTionPinchevent.get('pinch').set({ enable: true });
+    SimulaTionPinchevent.on('pinch pinchmove', ev => {
+        console.log(` EV.scale:${ev.scale}`);
+        console.log(`GlobalSope:${globalScope.scale}`);
+        console.log(` Hammer scale:${hammerscale}`);
+        var oldScale = globalScope.scale;
+        hammerscale = ev.scale;
+        // if (hammerscale >= 1.9) { hammerscale = 1.9 }
+        globalScope.scale = Math.max(0.5, Math.min(4 * DPR, hammerscale * 5));
+        globalScope.scale = Math.round(globalScope.scale * 10) / 10;
+        if (globalScope.scale >= 7.5) { globalScope.scale = 7.5 }
+        //if (globalScope.scale < 2) { globalScope.scale = 2 };
+        if (simulationArea.lastSelected && simulationArea.lastSelected.objectType !== 'Wire') { // selected object
+            pinX = simulationArea.lastSelected.x + ev.deltaX;
+            pinY = simulationArea.lastSelected.y + ev.deltaY;
+        } else {
+            pinY = ev.center.y;
+            pinX = ev.center.x;
+        }
+
+        globalScope.ox -= Math.round(pinX * ((globalScope.scale) - oldScale)); // Shift accordingly, so that we zoom wrt to the selected point
+        globalScope.oy -= Math.round(pinY * ((globalScope.scale) - oldScale));
+        // if (globalScope.scale < 7.5 && globalScope > 3.5) {
+        var scale = unit * globalScope.scale;
+        var ox = globalScope.ox % scale; // offset
+        var oy = globalScope.oy % scale; // offset
+        var transparentBackground = false;
+        var force = false;
+        document.getElementById('backgroundArea').style.left = (ox - scale) / DPR;
+        document.getElementById('backgroundArea').style.top = (oy - scale) / DPR;
+        if (globalScope.scale === simulationArea.prevScale && !force) return;
+
+        if (!backgroundArea.context) return;
+        simulationArea.prevScale = globalScope.scale;
+
+        var canvasWidth = backgroundArea.canvas.width; // max X distance
+        var canvasHeight = backgroundArea.canvas.height; // max Y distance
+
+        var ctx = backgroundArea.context;
+        ctx.beginPath();
+        backgroundArea.clear();
+        ctx.strokeStyle = colors["canvas_stroke"];
+        ctx.lineWidth = 1;
+        if (!transparentBackground) {
+            ctx.fillStyle = colors["canvas_fill"];
+            ctx.rect(0, 0, canvasWidth, canvasHeight);
+            ctx.fill();
+        }
+
+        if (!embed) {
+            var correction = 0.5 * (ctx.lineWidth % 2);
+            for (var i = 0; i < canvasWidth; i += scale) {
+                ctx.moveTo(Math.round(i + correction) - correction, 0);
+                ctx.lineTo(Math.round(i + correction) - correction, canvasHeight);
+            }
+            for (var j = 0; j < canvasHeight; j += scale) {
+                ctx.moveTo(0, Math.round(j + correction) - correction);
+                ctx.lineTo(canvasWidth, Math.round(j + correction) - correction);
+            }
+            ctx.stroke();
+        }
+
+
+        //  gridUpdateSet(true);
+        //  updateCanvasSet(true);
+        updateCanvasSet(true);
+        updateSimulationSet(true);
+        updatePositionSet(true);
+        gridUpdateSet(true);
+        wireToBeCheckedSet(1);
+        scheduleUpdate(1);
+
+
+
+
+
+
+    });
+    touchsimlatorevent.on('pinchend', ev => {
+        updateCanvasSet(true);
+        updateSimulationSet(true);
+        updatePositionSet(true);
+        gridUpdateSet(true);
+        wireToBeCheckedSet(1);
+        scheduleUpdate(1);
+
+    });
 };
 
 
@@ -998,7 +1239,6 @@ var isIe = (navigator.userAgent.toLowerCase().indexOf('msie') != -1 ||
     navigator.userAgent.toLowerCase().indexOf('trident') != -1);
 
 function onMouseMove(e) {
-    console.log(DPR);
     var rect = simulationArea.canvas.getBoundingClientRect();
     simulationArea.mouseRawX = (e.clientX - rect.left) * DPR;
     simulationArea.mouseRawY = (e.clientY - rect.top) * DPR;

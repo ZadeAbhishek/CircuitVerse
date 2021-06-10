@@ -158,6 +158,85 @@
   </div>
   <!-- /.navbar-collapse -->
 </nav>
+
+
+
+
+<div class="mobile-navbar">
+<a href="javascript:void(0)" class="closebtn" id="navbar-closeBtn" onclick="closeNav()">Close</a>
+  
+<a href="/"><span class='logo'></span></a>
+  
+    <ul class="" id="toolbar">
+    <span class="projectName" id="projectName">
+    Untitled
+   </span>
+      <li class="mobile-collapsible">
+        <a href="#" class=""  role="button">Project<span></span></a>
+         </li>
+         <ul class="mobile-content">
+          <% if not @project.nil? %>
+             <li><a class="logixButton pl-1" href="<%= user_project_url(@project.author, @project) %>" target="_blank">Project Page</a></li>
+          <% end %>
+          <li><a class="logixButton  " id="newProject">New Project</a></li>
+          <li><a class="logixButton  pl-1" id="save">Save Online</a></li>
+          <li><a class="logixButton  pl-1" id="saveOffline">Save Offline</a></li>
+          <li><a class="logixButton  pl-1" id="createOpenLocalPrompt">Open Offline</a></li>
+           <li><a class="logixButton  pl-1" id="clearProject">Clear Project</a></li>
+          <li><a class="logixButton  pl-1" id="recoverProject">Recover Project</a></li>
+          <li><a class="logixButton  pl-1" id="fullViewOption">Preview Circuit</a></li>
+          <li><a class="logixButton  pl-1" onclick="old_ui_redirect()">View Previous UI</a></li>
+        </ul>
+      <li class="mobile-collapsible">
+        <a href="#" class=""  role="button" >Circuit<span class="caret"></span></a>
+        </li>
+        <ul class="mobile-content">
+          <li><a class="text-left logixButton pl-1" id="newCircuit">New Circuit + </a></li>
+          <li><a class="text-left logixButton pl-1" id="newVerilogModule">New Verilog <br> Module</a></li>
+          <li><a class=" logixButton text-left pl-1" id="createSubCircuitPrompt">Insert SubCircuit</a></li>
+        </ul>
+      <li class="mobile-collapsible">
+        <a href="#" class=""  role="button" >Tools<span class="caret"></span></a>
+        
+      </li>
+      <ul class="mobile-content">
+          <li><a class="text-left pl-1 logixButton" id="createCombinationalAnalysisPrompt">Combinational<br>Analysis</a></li>
+          <li><a class=" text-left pl-1 logixButton" id="bitconverter">Hex-Bin-Dec<br>Converter</a></li>
+          <li><a class=" text-left pl-1 logixButton" id="createSaveAsImgPrompt">Download Image</a>
+          <li><a class=" text-left pl-1 logixButton" id="colorThemes">Themes</a>
+          <li><a class=" text-left pl-1" id="customShortcut">Custom Shortcut</a></li>
+          <li><a class=" text-left pl-1 logixButton" id="generateVerilog">Export Verilog</a>
+        </ul>
+      <li class="mobile-collapsible">
+        <a href="#" class="" role="button" >Help<span class="caret"></span></a>
+        
+      </li>
+      <ul class="mobile-content">
+            <li><a class=" text-left pl-1 logixButton" id="showTourGuide">Tutorial Guide</a></li>
+            <li><a class=" text-left pl-1" href="https://docs.circuitverse.org" class="" target="_blank" role="button" aria-haspopup="true" aria-expanded="false">User Manual</a></li>
+            <li><a class=" text-left pl-1" href="https://learn.circuitverse.org" class="" target="_blank" role="button" aria-haspopup="true" aria-expanded="false">Learn Digital Logic</a></li>
+            <li><a class=" text-left pl-1" href="https://circuitverse.org/forum" class="forum-tab" target="_blank" role="button" aria-haspopup="true" aria-expanded="false">Discussion Forum</a></li>
+        </ul>
+
+        <% if user_signed_in? %>
+        <a href="#"class="mobile-collapsible cur-user acc-drop user-field" role="button" aria-haspopup="true" aria-expanded="false"><%= current_user.name %><span class="caret acc-caret"></span></a>
+        <ul class="mobile-content">
+          <li><a  href=<%= user_path(current_user) %>>Dashboard</a></li>
+          <li><a  href=<%= user_groups_path(current_user) %>>My Groups</a></li>
+          <li><a  rel="nofollow" data-method="delete" href=<%= destroy_user_session_path %>>Sign Out</a></li>
+        </ul>
+      <% else %>
+        <a class="navbar-nav signIn-btn user-field" href=<%= new_user_session_path %>> Sign In </a>
+      <% end %>   
+      
+
+</div>
+
+
+
+
+
+
 <div id="tabsBar" class="noSelect pointerCursor">
   <button class="logixButton" id="newCircuit" onclick="">&#43;</button>
 </div>
@@ -185,7 +264,7 @@
             <div class="bbton" id="B2">
                 <button>B2</button>
             </div>
-            <div class="bbton">
+            <div class="bbton" id="B3">
                 <button>B3</button>
             </div>
 </div>
@@ -240,6 +319,35 @@
     </div>
   </div>
 </div>
+
+
+    <div id="mobile-time-daigram">
+    <div class='mobile-timing-diagram-toolbar noSelect'>
+      <button class='custom-btn--primary mobile-panel-button' title="Decrease Size"><span class="fas fa-chevron-left timing-diagram-smaller panel-button-icon"></span></button>
+      <button class='custom-btn--primary mobile-panel-button' title="Increase Size"><span class="fas fa-chevron-right timing-diagram-larger panel-button-icon"></span></button>
+      <button class='custom-btn--primary mobile-panel-button' title="Decrease Height"><span class="fas fa-chevron-up timing-diagram-small-height panel-button-icon"></span></button>
+      <button class='custom-btn--primary mobile-panel-button' title="Increase Height"><span class="fas fa-chevron-down timing-diagram-large-height panel-button-icon"></span></button>
+      <button class='custom-btn--primary mobile-panel-button' title="Download As Image"><span class="fas fa-download timing-diagram-download"></button>
+      <button class='custom-btn--tertiary mobile-panel-button' title="Reset Timing Diagram"><span class="fas fa-undo timing-diagram-reset"></button>
+      <button class='custom-btn--tertiary mobile-panel-button' title="Autocalibrate Cycle Units"><span class="fas fa-magic timing-diagram-calibrate"></button>
+      <button class='custom-btn--primary mobile-panel-button' title="Zoom In"><span class="fas fa-search-plus timing-diagram-zoom-in"></button>
+      <button class='custom-btn--primary mobile-panel-button' title="Zoom Out"><span class="fas fa-search-minus timing-diagram-zoom-out"></button>
+      <button class='custom-btn--primary mobile-panel-button' title="Resume Timing Diagram"><span class="fas fa-play timing-diagram-resume"></button>
+      <button class='custom-btn--primary mobile-panel-button' title="Pause Timing Diagram"><span class="fas fa-pause timing-diagram-pause"></button>
+       </div>
+       <div id="mobile-cycle-unit">
+       1 cycle = 
+      <input id="timing-diagram-units" type="number" min="1" autocomplete="off" value="1000">
+      Units
+      </div>
+      <span id='mobile-timing-diagram-log'></span>
+      
+    <div id="plot-mobile">
+      <canvas id="plotArea-mobile"
+      ></canvas>
+    </div>
+</div>
+
 <div id="MessageDiv"></div>
 <div class="noSelect defaultCursor draggable-panel draggable-panel-css" id="verilogEditorPanel">
   <div class="panel-header">Verilog Module

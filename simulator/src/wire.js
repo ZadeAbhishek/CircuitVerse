@@ -51,7 +51,7 @@ export default class Wire {
     }
 
     dblclick() {
-        if(this.node1.parent == globalScope.root && this.node2.parent == globalScope.root) {
+        if (this.node1.parent == globalScope.root && this.node2.parent == globalScope.root) {
             simulationArea.multipleObjectSelections = [this.node1, this.node2];
             simulationArea.lastSelected = undefined;
         }
@@ -130,14 +130,14 @@ export default class Wire {
         const ctx = simulationArea.context;
 
         var color;
-        if (simulationArea.lastSelected == this) { 
-            color = colors['color_wire_sel']; 
-        } else if (this.node1.value == undefined || this.node2.value == undefined) { 
-            color = colors['color_wire_lose']; 
-        } else if (this.node1.bitWidth == 1) { 
-            color = [colors['color_wire_lose'], colors['color_wire_con'], colors['color_wire_pow']][this.node1.value + 1]; 
-        } else { 
-            color = colors['color_wire']; 
+        if (simulationArea.lastSelected == this) {
+            color = colors['color_wire_sel'];
+        } else if (this.node1.value == undefined || this.node2.value == undefined) {
+            color = colors['color_wire_lose'];
+        } else if (this.node1.bitWidth == 1) {
+            color = [colors['color_wire_lose'], colors['color_wire_con'], colors['color_wire_pow']][this.node1.value + 1];
+        } else {
+            color = colors['color_wire'];
         }
         drawLine(ctx, this.node1.absX(), this.node1.absY(), this.node2.absX(), this.node2.absY(), color, 3);
     }

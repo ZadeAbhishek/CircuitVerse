@@ -120,7 +120,7 @@ export default class Text extends CircuitElement {
         ctx.textAlign = 'left';
         ctx.fillStyle = colors['text'];
         var labels = this.label.split('\n');
-        for(var i = 0; i < labels.length; i++) {
+        for (var i = 0; i < labels.length; i++) {
             fillText(ctx, labels[i], xx, yy + 5 + i * this.fontSize, this.fontSize);
         }
         ctx.fill();

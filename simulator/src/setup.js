@@ -59,7 +59,7 @@ export function resetup() {
     if (!embed) {
         height = (document.body.clientHeight - document.getElementById('toolbar').clientHeight) * DPR;
     } else {
-        height = (document.getElementById('simulation').clientHeight) * DPR;
+        height = (document.getElementById('simulation').clientHeight + document.getElementById('toolbar').clientHeight) * DPR;
     }
     // setup simulationArea and backgroundArea variables used to make changes to canvas.
     backgroundArea.setup();

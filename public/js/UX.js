@@ -61,9 +61,9 @@ function setupUI() {
     var ctxEl = document.getElementById('contextMenu');
     document.addEventListener('mousedown', (e) => {
         // Check if mouse is not inside the context menu and menu is visible
-        if (!((e.clientX >= ctxPos.x && e.clientX <= ctxPos.x + ctxEl.offsetWidth)
-            && (e.clientY >= ctxPos.y && e.clientY <= ctxPos.y + ctxEl.offsetHeight))
-            && (ctxPos.visible && e.which !== 3)) {
+        if (!((e.clientX >= ctxPos.x && e.clientX <= ctxPos.x + ctxEl.offsetWidth) &&
+                (e.clientY >= ctxPos.y && e.clientY <= ctxPos.y + ctxEl.offsetHeight)) &&
+            (ctxPos.visible && e.which !== 3)) {
             hideContextMenu();
         }
 
@@ -87,7 +87,7 @@ function setupUI() {
     //     // minHeight:200,
     // });
 
-    $('.logixModules').mousedown(function () {
+    $('.logixModules').mousedown(function() {
         //////console.log(smartDropXX,smartDropYY);
         if (simulationArea.lastSelected && simulationArea.lastSelected.newElement) simulationArea.lastSelected.delete();
         var obj = new window[this.id](); //(simulationArea.mouseX,simulationArea.mouseY);
@@ -100,13 +100,13 @@ function setupUI() {
             smartDropYY += 80;
         }
     });
-    $('.logixButton').click(function () {
+    $('.logixButton').click(function() {
         window[this.id]();
     });
     // var dummyCounter=0;
 
 
-    $('.logixModules').hover(function () {
+    $('.logixModules').hover(function() {
         // Tooltip can be statically defined in the prototype.
         var tooltipText = window[this.id].prototype.tooltipText;
         if (!tooltipText) return;
@@ -115,7 +115,7 @@ function setupUI() {
         ////console.log("SHOWING")
         $("#Help").append(tooltipText);
     }); // code goes in document ready fn only
-    $('.logixModules').mouseleave(function () {
+    $('.logixModules').mouseleave(function() {
         $("#Help").removeClass("show");
 
     }); // code goes in document ready fn only
@@ -189,12 +189,10 @@ function showProperties(obj) {
                 if (obj.mutableProperties[attr].type == "number") {
                     var s = "<p>" + prop.name + "<input class='objectPropertyAttribute' type='number'  name='" + prop.func + "' min='" + (prop.min || 0) + "' max='" + (prop.max || 200) + "' value=" + obj[attr] + "></p>";
                     $('#moduleProperty-inner').append(s);
-                }
-                else if (obj.mutableProperties[attr].type == "text") {
+                } else if (obj.mutableProperties[attr].type == "text") {
                     var s = "<p>" + prop.name + "<input class='objectPropertyAttribute' type='text'  name='" + prop.func + "' maxlength='" + (prop.maxlength || 200) + "' value=" + obj[attr] + "></p>";
                     $('#moduleProperty-inner').append(s);
-                }
-                else if (obj.mutableProperties[attr].type == "button") {
+                } else if (obj.mutableProperties[attr].type == "button") {
                     var s = "<p><button class='objectPropertyAttribute btn btn-primary btn-xs' type='button'  name='" + prop.func + "'>" + prop.name + "</button></p>";
                     $('#moduleProperty-inner').append(s);
                 }
@@ -206,17 +204,17 @@ function showProperties(obj) {
     var helplink = obj && (obj.helplink);
     if (helplink) {
         $('#moduleProperty-inner').append('<p><button id="HelpButton" class="btn btn-primary btn-xs" type="button" >Help &#9432</button></p>');
-        $('#HelpButton').click(function () {
+        $('#HelpButton').click(function() {
             window.open(helplink);
         });
     }
 
     function checkValidBitWidth() {
         const selector = $("[name='newBitWidth']");
-        if (selector == undefined
-            || selector.val() > 32
-            || selector.val() < 1
-            || !$.isNumeric(selector.val())) {
+        if (selector == undefined ||
+            selector.val() > 32 ||
+            selector.val() < 1 ||
+            !$.isNumeric(selector.val())) {
             // fallback to previously saves state
             selector.val(selector.attr("old-val"));
         } else {
@@ -224,7 +222,7 @@ function showProperties(obj) {
         }
     }
 
-    $(".objectPropertyAttribute").on("change keyup paste click", function () {
+    $(".objectPropertyAttribute").on("change keyup paste click", function() {
         // return;
         //////console.log(this.name+":"+this.value);
 
@@ -237,7 +235,7 @@ function showProperties(obj) {
         else
             window[this.name](this.value);
     })
-    $(".objectPropertyAttributeChecked").on("change keyup paste click", function () {
+    $(".objectPropertyAttributeChecked").on("change keyup paste click", function() {
         // return;
         //////console.log(this.name+":"+this.value);
 
@@ -276,19 +274,17 @@ $('#bitconverterprompt').append(`
 <label  style='color:grey'>Octal value</label><br><input  type='text' id='octalInput' label="Octal" name='text1'><br><br>
 <label  style='color:grey'>Hexadecimal value</label><br><input  type='text' id='hexInput' label="Hex" name='text1'><br><br>
 `);
-$('#bitconverter').click(function () {
+$('#bitconverter').click(function() {
     $('#bitconverterprompt').dialog({
-        buttons: [
-            {
-                text: "Reset",
-                click: function () {
-                    $("#decimalInput").val("0");
-                    $("#binaryInput").val("0");
-                    $("#octalInput").val("0");
-                    $("#hexInput").val("0");
-                }
+        buttons: [{
+            text: "Reset",
+            click: function() {
+                $("#decimalInput").val("0");
+                $("#binaryInput").val("0");
+                $("#octalInput").val("0");
+                $("#hexInput").val("0");
             }
-        ]
+        }]
     });
 })
 
@@ -307,22 +303,22 @@ function setBaseValues(x) {
     $("#decimalInput").val(x);
 }
 
-$("#decimalInput").on('keyup', function () {
+$("#decimalInput").on('keyup', function() {
     var x = parseInt($("#decimalInput").val(), 10);
     setBaseValues(x);
 })
 
-$("#binaryInput").on('keyup', function () {
+$("#binaryInput").on('keyup', function() {
     var x = parseInt($("#binaryInput").val(), 2);
     setBaseValues(x);
 })
 
-$("#hexInput").on('keyup', function () {
+$("#hexInput").on('keyup', function() {
     var x = parseInt($("#hexInput").val(), 16);
     setBaseValues(x);
 })
 
-$("#octalInput").on('keyup', function () {
+$("#octalInput").on('keyup', function() {
     var x = parseInt($("#octalInput").val(), 8);
     setBaseValues(x);
 })

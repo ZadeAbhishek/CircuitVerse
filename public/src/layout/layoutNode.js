@@ -76,9 +76,9 @@ export default class LayoutNode {
             simulationArea.lastSelected = this;
         } else if (this.wasClicked && this.clicked) {
             // Check if valid position and update accordingly
-            if (tempBuffer.isAllowed(simulationArea.mouseX, simulationArea.mouseY) && !tempBuffer.isNodeAt(simulationArea.mouseX, simulationArea.mouseY)) {
-                this.x = simulationArea.mouseX;
-                this.y = simulationArea.mouseY;
+            if (tempBuffer.isAllowed((simulationArea.mouseX || simulationArea.touchX), (simulationArea.mouseY || simulationArea.touchY)) && !tempBuffer.isNodeAt((simulationArea.mouseX || simulationArea.touchX), (simulationArea.mouseY || simulationArea.touchY))) {
+                this.x = simulationArea.mouseX || simulationArea.touchX;
+                this.y = simulationArea.mouseY || simulationArea.touchY;
             }
         }
     }
@@ -97,6 +97,6 @@ export default class LayoutNode {
      * this function is used to check if hover
      */
     isHover() {
-        return this.absX() === simulationArea.mouseX && this.absY() === simulationArea.mouseY;
+        return this.absX() === (simulationArea.mouseX || simulationArea.touchX) && this.absY() === (simulationArea.mouseY || simulationArea.touchY);
     }
 }

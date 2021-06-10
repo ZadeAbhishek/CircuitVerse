@@ -188,12 +188,6 @@ input[type="text"]:focus {
     text-overflow: ellipsis;
 }
 
-@media(max-width: 992px) {
-    .projectName {
-        visibility: hidden;
-    }
-}
-
 .account-btn {
     position: absolute;
     right: 13px;
@@ -217,9 +211,7 @@ input[type="text"]:focus {
 }
 
 @media(max-width: 992px) {
-    .user-field {
-        visibility: hidden;
-    }
+    .user-field {}
 }
 
 .signIn-btn {
@@ -1208,12 +1200,19 @@ input:checked+.slider:before {
     .navbar .nav.pull-right {
         display: none;
     }
+    .collapse navbar-collapse {
+        height: 100%;
+    }
 }
 
 @media(max-width:992px) {
     .nav-dropdown {
         text-align: center;
         padding-top: 20px;
+        font-size: 35px;
+    }
+    .navbar {
+        display: none;
     }
 }
 
@@ -1640,6 +1639,11 @@ canvas {
     width: 800px;
 }
 
+#plot-mobile {
+    width: 400px;
+    padding: 20px;
+}
+
 .timing-diagram-toolbar {
     padding-left: 4px;
     padding: 2px;
@@ -1647,7 +1651,7 @@ canvas {
 }
 
 .timing-diagram-toolbar input {
-    width: 80px;
+    width: 150px;
     background: transparent !important;
 }
 
@@ -1715,10 +1719,11 @@ canvas {
 
 #shortM {
     position: absolute;
-    margin: 20px;
+    margin: 10px;
     width: auto;
     right: 0px;
-    z-index: 100;
+    z-index: 99;
+    padding-bottom: 0px;
 }
 
 #Tmenu {
@@ -1730,13 +1735,14 @@ canvas {
     /* Green */
     border: none;
     color: black;
-    padding: 15px 15px;
-    padding-bottom: 10px;
+    padding: 10px 10px;
     text-align: center;
     text-decoration: none;
     font-size: 16px;
     margin-bottom: 50px;
     top: 0px;
+    height: 50px;
+    width: 50px;
 }
 
 .mobilepanelHeader {
@@ -1830,6 +1836,78 @@ canvas {
 
 #moduleProperty-inner-2:last-child {
     margin-bottom: 15px;
+}
+
+#mobile-time-daigram {
+    font: inherit;
+    width: 500px;
+    top: 110px;
+    right: 88px;
+    background-color: goldenrod;
+    position: absolute;
+    overflow: scroll;
+    height: 310px;
+    visibility: none;
+    margin: auto;
+    transition: background .5s ease-out;
+    z-index: 100;
+    padding: 5px;
+    visibility: hidden;
+}
+
+.mobile-timing-diagram-toolbar {
+    padding-left: 4px;
+    padding: 2px;
+    cursor: default;
+    background-color: black;
+}
+
+.mobile-timing-diagram-toolbar input {
+    width: 150px;
+    background: transparent !important;
+}
+
+.mobile-panel-button-icon {
+    cursor: pointer;
+    padding-top: 50px;
+    padding-bottom: 50px;
+    height: auto;
+}
+
+.mobile-panel-button {
+    cursor: pointer;
+    width: 50px;
+    height: 50px;
+}
+
+#mobile-cycle-unit {
+    background-color: brown;
+}
+
+#mobile-timing-diagram-log {
+    font-size: 12.5px;
+    margin-left: 5px;
+    /* margin-bottom: 5px; */
+    border-radius: 3px;
+    padding: 3px;
+}
+
+.mobile-navbar {
+    height: 0%;
+    width: 100%;
+    position: fixed;
+    /* Stay in place */
+    z-index: 100;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    background-color: rgb(0, 0, 0);
+    /* Black fallback color */
+    background-color: rgba(0, 0, 0, 0.9);
+    /* Black w/opacity */
+    overflow-x: hidden;
+    /* Disable horizontal scroll */
+    transition: 0.5s;
 }
 
 @media screen and (orientation:portrait) {
@@ -2019,4 +2097,77 @@ canvas {
     input:checked+.slider:before {
         transition: background .5s ease-out;
     }
+    .circuits {
+        height: 35px;
+    }
+    .circuitName {
+        font-size: large;
+    }
+    #tabsBar {
+        height: 50px;
+        overflow-x: scroll;
+    }
+    .logixButton {
+        line-height: 1em;
+        display: inline-block;
+        text-decoration: none;
+        padding: 5px;
+        margin: 10px;
+    }
+    .logixButton:hover {
+        color: seagreen;
+    }
+    .logo {
+        padding-top: 15px;
+        height: 70px;
+        width: 250px;
+        padding-bottom: 15px;
+    }
+    .projectName {
+        font-size: 25px;
+    }
+}
+
+.mobile-navbar {
+    color: white;
+    text-align: center;
+}
+
+.mobile-collapsible {
+    background-color: transparent;
+    color: white;
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 35px;
+    transition: box-shadow 0.2s ease-out;
+}
+
+.mobile-collapsible:hover {
+    background-color: rgb(85, 145, 111);
+}
+
+.mobile-content {
+    padding: 0 18px;
+    display: none;
+    overflow: hidden;
+    background-color: transparent;
+    color: white;
+    font-size: 25px;
+    padding: 10px;
+    background-color: rgba(75, 86, 99, 0.25);
+    transition: box-shadow 0.2s ease-out;
+}
+
+#navbar-closeBtn {
+    font-size: 25px;
+    display: inline-block;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    padding: 4px;
+    margin: 0 5px;
 }

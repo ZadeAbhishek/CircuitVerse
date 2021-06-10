@@ -224,7 +224,7 @@ export default class Node {
      * Helper fuction to move a node.
      */
     drag() {
-        this.x = this.oldx + simulationArea.mouseX - simulationArea.mouseDownX;
+        this.x = this.oldx + simulationArea.touchX - simulationArea.mouseDownX;
         this.y = this.oldy + simulationArea.mouseY - simulationArea.mouseDownY;
     }
 
@@ -722,11 +722,11 @@ export default class Node {
     }
 
     isClicked() {
-        return this.absX() == simulationArea.mouseX && this.absY() == simulationArea.mouseY;
+        return this.absX() == simulationArea.touchX && this.absY() == simulationArea.touchY;
     }
 
     isHover() {
-        return this.absX() == simulationArea.mouseX && this.absY() == simulationArea.mouseY;
+        return this.absX() == simulationArea.touchX && this.absY() == simulationArea.touchY;
     }
 
     /**
